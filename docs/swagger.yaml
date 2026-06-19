@@ -97,16 +97,37 @@ paths:
               properties:
                 title:
                   type: string
+                  example: GE MRI Machine 1.5T
+                description:
+                  type: string
+                  example: Fully serviced MRI machine in excellent condition
                 category:
                   type: string
+                  enum: [MRI, X-Ray, Cathlab, ECG, Ultrasound, Ventilator, CT Scan, Patient Monitor, Defibrillator, Laboratory Equipment, Surgical Equipment, Other]
                 brand:
                   type: string
+                  example: GE Healthcare
                 model:
                   type: string
+                  example: SIGNA Artist
+                manufacturingYear:
+                  type: integer
+                  example: 2019
                 condition:
                   type: string
+                  enum: [Used, Refurbished, Spare]
+                price:
+                  type: number
+                  example: 2500000
                 city:
                   type: string
+                  example: Mumbai
+                state:
+                  type: string
+                  example: Maharashtra
+                country:
+                  type: string
+                  example: India
                 images:
                   type: array
                   items:
@@ -139,6 +160,46 @@ paths:
           schema:
             type: string
             format: uuid
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                  enum: [MRI, X-Ray, Cathlab, ECG, Ultrasound, Ventilator, CT Scan, Patient Monitor, Defibrillator, Laboratory Equipment, Surgical Equipment, Other]
+                brand:
+                  type: string
+                model:
+                  type: string
+                manufacturingYear:
+                  type: integer
+                condition:
+                  type: string
+                  enum: [Used, Refurbished, Spare]
+                price:
+                  type: number
+                city:
+                  type: string
+                state:
+                  type: string
+                country:
+                  type: string
+                deletedImages:
+                  type: array
+                  items:
+                    type: integer
+                  description: Array of image IDs to delete
+                newImages:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
       responses:
         '200':
           description: Post updated successfully
