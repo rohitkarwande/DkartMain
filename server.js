@@ -1,5 +1,7 @@
- const express = require('express');
+const express = require('express');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
 
 require('dotenv').config();
 const chatRoutes = require('./routes/chatRoutes');
@@ -27,12 +29,25 @@ require('./cron_jobs'); // Initialize cron jobs
 const swaggerDocument = YAML.load(path.join(__dirname, 'docs', 'swagger.yaml'));
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public')); // Serve frontend files including /uploads
 app.use(apiLimiter); // Apply global rate limiter
+
+// Make io accessible to routes if needed
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -54,8 +69,12 @@ app.use('/api/vendor', vendorRoutes);
 app.use('/api/service-requests', serviceRequestRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/health', healthRoutes);
+
+// Initialize Socket.IO handlers
+require('./sockets/chatSocket')(io);
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

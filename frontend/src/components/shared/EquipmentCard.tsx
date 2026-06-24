@@ -13,6 +13,7 @@ interface EquipmentCardProps {
   condition: string;
   image: string;
   isVerified?: boolean;
+  status?: string;
 }
 
 export function EquipmentCard({
@@ -24,6 +25,7 @@ export function EquipmentCard({
   condition,
   image,
   isVerified = true,
+  status,
 }: EquipmentCardProps) {
   const formattedPrice = new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -33,18 +35,25 @@ export function EquipmentCard({
 
   return (
     <Link to={`/equipment/${id}`} className="block h-full group">
-      <Card className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full h-full border-slate-200">
+      <Card className={`overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full border-slate-200 ${status === 'Sold' ? 'opacity-75' : ''}`}>
         <div className="relative aspect-video overflow-hidden bg-slate-100">
           <img
             src={image}
             alt={title}
-            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+            className={`object-cover w-full h-full group-hover:scale-105 transition-transform duration-300 ${status === 'Sold' ? 'grayscale' : ''}`}
           />
           <div className="absolute top-2 left-2 flex gap-1">
             <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm text-xs font-semibold">
               {condition}
             </Badge>
           </div>
+          {status === 'Sold' && (
+            <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center backdrop-blur-[2px]">
+              <div className="bg-white/95 px-4 py-1.5 rounded-lg font-bold text-slate-800 tracking-wider shadow-lg transform -rotate-12 border-2 border-slate-800">
+                SOLD OUT
+              </div>
+            </div>
+          )}
         </div>
         <CardContent className="p-4 flex-1">
           <div className="text-sm text-muted-foreground mb-1 font-medium">{brand}</div>

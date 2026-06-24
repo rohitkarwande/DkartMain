@@ -22,12 +22,10 @@ export function Inquiries() {
 
   const handleStartChat = async (inquiryId: number) => {
     try {
-      await createRoom.mutateAsync({ inquiry_id: inquiryId });
-      navigate("/dashboard/chat");
+      const res = await createRoom.mutateAsync({ inquiry_id: inquiryId });
+      navigate("/dashboard/chat", { state: { roomId: res.room.id } });
     } catch (err) {
       console.error("Failed to create chat room", err);
-      // If room already exists, the API might return an error or we might just navigate. 
-      // Ideally backend handles 'get or create'. Let's navigate anyway to see if they can find it.
       navigate("/dashboard/chat");
     }
   };

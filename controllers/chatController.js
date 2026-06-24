@@ -4,6 +4,19 @@ const createRoom = async (req, res) => {
     try {
         const { inquiry_id } = req.body;
 
+        // Check if room already exists
+        const existingRoom = await db.query(
+            `SELECT * FROM chat_rooms WHERE inquiry_id = $1`,
+            [inquiry_id]
+        );
+
+        if (existingRoom.rows.length > 0) {
+            return res.status(200).json({
+                message: 'Chat room already exists',
+                room: existingRoom.rows[0]
+            });
+        }
+
         const room = await db.query(
             `INSERT INTO chat_rooms (inquiry_id)
              VALUES ($1)
@@ -58,9 +71,16 @@ const sendMessage = async (req, res) => {
             [id, req.user.id, message]
         );
 
+        const savedMessage = result.rows[0];
+
+        // Broadcast to socket room
+        if (req.io) {
+            req.io.to(`room_${id}`).emit('receive_message', savedMessage);
+        }
+
         res.status(201).json({
             message: 'Message sent',
-            data: result.rows[0]
+            data: savedMessage
         });
 
     } catch (error) {

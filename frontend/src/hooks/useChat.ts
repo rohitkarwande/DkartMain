@@ -30,7 +30,7 @@ export function useChatRooms() {
   });
 }
 
-// Fetch messages for a specific room (polls every 3 seconds)
+// Fetch messages for a specific room
 export function useChatMessages(roomId: number | null) {
   return useQuery({
     queryKey: ['chat', 'messages', roomId],
@@ -40,7 +40,6 @@ export function useChatMessages(roomId: number | null) {
       return res.data as ChatMessage[];
     },
     enabled: !!roomId,
-    refetchInterval: 3000, // Poll for new messages
   });
 }
 

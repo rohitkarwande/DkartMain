@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EquipmentCard } from "@/components/shared/EquipmentCard";
 import { useEquipment } from "@/hooks/useEquipment";
+import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 
 const CATEGORIES = [
@@ -20,6 +21,7 @@ const CATEGORIES = [
 
 export function Home() {
   const { data: featuredEquipment, isLoading, isError } = useEquipment();
+  const { data: user } = useAuth();
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [location, setLocation] = useState("");
@@ -139,7 +141,7 @@ export function Home() {
           <div className="p-16 text-center border rounded-xl bg-white border-dashed border-slate-200">
             <Package className="h-12 w-12 text-slate-200 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-slate-900 mb-1">No listings yet</h3>
-            <p className="text-slate-400 mb-6">Be the first to list medical equipment on Dr.Kart.</p>
+            <p className="text-slate-400 mb-6">Be the first to list medical equipment on DKart.</p>
             <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
               <Link to="/sell">List Equipment</Link>
             </Button>
@@ -155,6 +157,7 @@ export function Home() {
                 price={equipment.price}
                 location={[equipment.city, equipment.state].filter(Boolean).join(", ") || "India"}
                 condition={equipment.condition}
+                status={equipment.status}
                 image={equipment.images?.[0]?.image_url 
                   ? `http://localhost:3000${equipment.images[0].image_url}` 
                   : "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"}
@@ -169,13 +172,15 @@ export function Home() {
         <div className="bg-emerald-600 rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to sell your medical equipment?</h2>
           <p className="text-emerald-100 mb-8 max-w-xl mx-auto">
-            Join thousands of hospitals, clinics, and dealers who trust Dr.Kart to reach the right buyers across India.
+            Join thousands of hospitals, clinics, and dealers who trust DKart to reach the right buyers across India.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="bg-white text-emerald-700 hover:bg-emerald-50 font-semibold px-8">
-              <Link to="/signup">Create Free Account</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 px-8">
+            {!user && (
+              <Button asChild size="lg" className="bg-emerald-800 text-white hover:bg-emerald-900 font-semibold px-8 border-0">
+                <Link to="/signup">Create Free Account</Link>
+              </Button>
+            )}
+            <Button asChild size="lg" className="bg-white text-emerald-700 hover:bg-slate-50 border-0 font-semibold px-8">
               <Link to="/search">Browse Equipment</Link>
             </Button>
           </div>

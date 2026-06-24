@@ -16,6 +16,7 @@ router.get('/:id/engagement', equipmentController.getEngagementMetrics);
 
 // Protected routes
 router.post('/', authMiddleware, upload.array('images', 10), equipmentController.createEquipment);
+router.post('/bulk-upload', authMiddleware, upload.single('csvFile'), equipmentController.bulkUploadEquipment);
 router.put('/:id', authMiddleware, upload.array('newImages', 10), equipmentController.updateEquipment);
 router.delete('/:id', authMiddleware, equipmentController.deleteEquipment);
 router.patch('/:id/status', authMiddleware, equipmentController.updateStatus);

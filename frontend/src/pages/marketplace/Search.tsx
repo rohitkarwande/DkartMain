@@ -180,6 +180,7 @@ export function Search() {
                   price={item.price}
                   location={[item.city, item.state].filter(Boolean).join(", ") || "India"}
                   condition={item.condition}
+                  status={item.status}
                   image={item.images?.[0]?.image_url 
                     ? `http://localhost:3000${item.images[0].image_url}` 
                     : "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"}

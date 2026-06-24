@@ -39,10 +39,10 @@ export function TopNavbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 shrink-0">
             <div className="bg-emerald-600 p-1.5 rounded-lg">
-              <span className="text-white font-bold text-lg leading-none block">dk</span>
+              <span className="text-white font-bold text-lg leading-none block">DK</span>
             </div>
             <span className="font-bold text-xl tracking-tight hidden sm:block text-slate-900">
-              Dr.<span className="text-emerald-600">Kart</span>
+              D<span className="text-emerald-600">Kart</span>
             </span>
           </Link>
 

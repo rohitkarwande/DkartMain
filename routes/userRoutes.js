@@ -10,5 +10,7 @@ router.put('/profile', userController.updateProfile);
 router.post('/kyc', userController.submitKyc);
 router.post('/become-seller', userController.becomeSeller);
 router.get('/dashboard', userController.getDashboard);
+router.post('/add-contact', userController.addContact);
+router.post('/verify-contact', userController.verifyContact);
 
 module.exports = router;

@@ -5,9 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { 
   Loader2, PlusCircle, Trash2, Archive, CheckCircle2, 
-  MapPin, Calendar, Eye
+  MapPin, Calendar, Eye, Upload, Download, X, Edit
 } from "lucide-react";
 import { useState } from "react";
+import { api } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 const statusColors: Record<string, string> = {
   Active: "bg-green-50 text-green-700 border-green-200",
@@ -20,7 +22,41 @@ export function Listings() {
   const { data: listings, isLoading, isError } = useMyListings();
   const deleteEquipment = useDeleteEquipment();
   const updateStatus = useUpdateEquipmentStatus();
+  const queryClient = useQueryClient();
+  
   const [confirmDelete, setConfirmDelete] = useState<string | number | null>(null);
+  const [showBulkUpload, setShowBulkUpload] = useState(false);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [bulkUploadError, setBulkUploadError] = useState("");
+  const [bulkUploadSuccess, setBulkUploadSuccess] = useState("");
+
+  const handleBulkUpload = async () => {
+    if (!csvFile) return;
+    setIsUploading(true);
+    setBulkUploadError("");
+    setBulkUploadSuccess("");
+
+    const formData = new FormData();
+    formData.append("csvFile", csvFile);
+
+    try {
+      const res = await api.post("/equipment/bulk-upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      setBulkUploadSuccess(`Success: Added ${res.data.successCount} listings. Failed: ${res.data.failCount}`);
+      queryClient.invalidateQueries({ queryKey: ['my-equipment'] });
+      setTimeout(() => {
+        setShowBulkUpload(false);
+        setCsvFile(null);
+        setBulkUploadSuccess("");
+      }, 3000);
+    } catch (err: any) {
+      setBulkUploadError(err.response?.data?.error || "Bulk upload failed.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -47,13 +83,74 @@ export function Listings() {
             Manage your inventory · {listings?.length ?? 0} total listing{listings?.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Button asChild className="bg-emerald-600 hover:bg-emerald-700 shrink-0">
-          <Link to="/sell">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Listing
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setShowBulkUpload(true)} variant="outline" className="shrink-0 border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+            <Upload className="mr-2 h-4 w-4" />
+            Bulk Upload
+          </Button>
+          <Button asChild className="bg-emerald-600 hover:bg-emerald-700 shrink-0">
+            <Link to="/sell">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Add Listing
+            </Link>
+          </Button>
+        </div>
       </div>
+
+      {showBulkUpload && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl relative">
+            <button onClick={() => setShowBulkUpload(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="text-xl font-bold text-slate-900 mb-2">Bulk Upload Listings</h2>
+            <p className="text-sm text-slate-500 mb-4">Upload a CSV file to add multiple equipment listings at once.</p>
+            
+            <div className="mb-6 p-4 bg-slate-50 rounded-lg text-sm border border-slate-100">
+              <h3 className="font-semibold text-slate-700 mb-2">Instructions:</h3>
+              <ul className="list-disc pl-5 space-y-1 text-slate-600">
+                <li>Required columns: Title, Category, Brand, Model, Condition, City</li>
+                <li>Valid Categories: MRI, X-Ray, Cathlab, ECG, Ultrasound, etc.</li>
+                <li>Valid Conditions: Used, Refurbished, Spare</li>
+                <li>Listings will be saved as <strong>Drafts</strong> until images are added.</li>
+              </ul>
+              <Button 
+                variant="link" 
+                className="p-0 h-auto mt-3 text-emerald-600 font-semibold flex items-center"
+                onClick={() => {
+                  const csvContent = "Title,Category,Brand,Model,Condition,Price,City,State,Description,Manufacturing_Year\nSample MRI,MRI,GE,Optima MR360,Used,5000000,Mumbai,Maharashtra,Good condition,2015\n";
+                  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                  const link = document.createElement("a");
+                  link.href = URL.createObjectURL(blob);
+                  link.download = "bulk_upload_template.csv";
+                  link.click();
+                }}
+              >
+                <Download className="mr-1 h-4 w-4" /> Download Template CSV
+              </Button>
+            </div>
+
+            <div className="mb-4">
+              <input 
+                type="file" 
+                accept=".csv" 
+                className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
+                onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+              />
+            </div>
+
+            {bulkUploadError && <p className="text-red-500 text-sm mb-4">{bulkUploadError}</p>}
+            {bulkUploadSuccess && <p className="text-emerald-600 text-sm mb-4 font-semibold">{bulkUploadSuccess}</p>}
+
+            <div className="flex justify-end gap-3 mt-6">
+              <Button variant="outline" onClick={() => setShowBulkUpload(false)}>Cancel</Button>
+              <Button onClick={handleBulkUpload} disabled={!csvFile || isUploading} className="bg-emerald-600 hover:bg-emerald-700">
+                {isUploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...</> : 'Upload CSV'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!listings?.length ? (
         <div className="bg-white border border-dashed rounded-xl p-16 text-center">
@@ -119,6 +216,11 @@ export function Listings() {
                         <Button asChild size="sm" variant="outline">
                           <Link to={`/equipment/${item.id}`}>
                             <Eye className="h-3.5 w-3.5 mr-1" /> View
+                          </Link>
+                        </Button>
+                        <Button asChild size="sm" variant="outline">
+                          <Link to={`/edit/${item.id}`}>
+                            <Edit className="h-3.5 w-3.5 mr-1" /> Edit
                           </Link>
                         </Button>
                         {item.status === 'Draft' && (

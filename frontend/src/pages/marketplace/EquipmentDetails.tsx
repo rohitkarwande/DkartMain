@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EquipmentCard } from "@/components/shared/EquipmentCard";
 
 export function EquipmentDetails() {
@@ -22,6 +22,11 @@ export function EquipmentDetails() {
   const [inquiryMsg, setInquiryMsg] = useState("I am interested in this equipment. Please share pricing and availability details.");
   const [isSent, setIsSent] = useState(false);
   const [inquiryError, setInquiryError] = useState("");
+
+  // Auto scroll to top when equipment changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -188,7 +193,13 @@ export function EquipmentDetails() {
             </div>
 
             {/* Inquiry CTA */}
-            {isSent ? (
+            {equipment.status === 'Sold' ? (
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
+                <CheckCircle2 className="h-8 w-8 text-slate-400 mx-auto mb-2" />
+                <p className="font-bold text-slate-700 text-lg">Equipment Sold</p>
+                <p className="text-sm text-slate-500 mt-1">This item has been sold to another user and is no longer available.</p>
+              </div>
+            ) : isSent ? (
               <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
                 <CheckCircle2 className="h-8 w-8 text-green-600 mx-auto mb-2" />
                 <p className="font-semibold text-green-700">Inquiry Sent!</p>
@@ -245,6 +256,7 @@ export function EquipmentDetails() {
                 price={item.price}
                 location={[item.city, item.state].filter(Boolean).join(", ") || "India"}
                 condition={item.condition}
+                status={item.status}
                 image={(item.images?.[0] as any)?.image_url 
                   ? `http://localhost:3000${(item.images[0] as any).image_url}` 
                   : "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"}

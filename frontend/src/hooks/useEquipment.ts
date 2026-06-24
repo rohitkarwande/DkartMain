@@ -147,3 +147,22 @@ export function useUpdateEquipmentStatus() {
     },
   });
 }
+
+// Update existing equipment listing
+export function useUpdateEquipment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, formData }: { id: string | number; formData: FormData }) => {
+      const res = await api.put(`/equipment/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return res.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['my-equipment'] });
+      queryClient.invalidateQueries({ queryKey: ['equipment'] });
+      queryClient.invalidateQueries({ queryKey: ['equipment', 'single', String(variables.id)] });
+    },
+  });
+}

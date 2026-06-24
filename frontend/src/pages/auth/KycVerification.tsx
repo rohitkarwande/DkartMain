@@ -53,7 +53,7 @@ export function KycVerification() {
         <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
           <ShieldCheck className="h-8 w-8 text-emerald-600" />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Become a Seller on Dr.Kart</h1>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">Become a Seller on DKart</h1>
         <p className="text-slate-600 max-w-lg mx-auto">
           To list medical equipment, verify your business credentials. 
           This builds trust with buyers across the platform.
@@ -139,7 +139,7 @@ export function KycVerification() {
               <FileText className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
               <div className="text-sm text-blue-700">
                 <p className="font-semibold mb-1">What happens next?</p>
-                <p>Your submission will be reviewed by the Dr.Kart team within 24 hours. Your account will be temporarily upgraded so you can start listing immediately.</p>
+                <p>Your submission will be reviewed by the DKart team within 24 hours. Your account will be temporarily upgraded so you can start listing immediately.</p>
               </div>
             </div>
 

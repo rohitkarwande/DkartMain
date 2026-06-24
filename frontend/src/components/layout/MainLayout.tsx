@@ -16,10 +16,10 @@ export function MainLayout() {
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
                 <div className="bg-emerald-600 p-1.5 rounded-lg">
-                  <span className="text-white font-bold text-lg leading-none block">dk</span>
+                  <span className="text-white font-bold text-lg leading-none block">DK</span>
                 </div>
                 <span className="font-bold text-xl tracking-tight text-white">
-                  Dr.<span className="text-emerald-500">Kart</span>
+                  D<span className="text-emerald-500">Kart</span>
                 </span>
               </div>
               <p className="text-sm">India's trusted B2B healthcare equipment marketplace for hospitals, clinics, and diagnostic centers.</p>
@@ -52,7 +52,7 @@ export function MainLayout() {
             </div>
           </div>
           <div className="border-t border-slate-800 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
-            <span>&copy; {new Date().getFullYear()} Dr.Kart Marketplace. All rights reserved.</span>
+            <span>&copy; {new Date().getFullYear()} DKart Marketplace. All rights reserved.</span>
             <span className="text-slate-500">Made for India's Healthcare Ecosystem</span>
           </div>
         </div>
