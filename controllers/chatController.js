@@ -18,22 +18,20 @@ const createRoom = async (req, res) => {
         }
 
         const room = await db.query(
-            `INSERT INTO chat_rooms (inquiry_id)
-             VALUES ($1)
-             RETURNING *`,
+            `INSERT INTO chat_rooms (inquiry_id) VALUES ($1) RETURNING *`,
             [inquiry_id]
         );
 
-        res.status(201).json({
-            message: 'Chat room created',
-            room: room.rows[0]
-        });
+        // Auto-advance inquiry status to 'In Progress' when chat room opens
+        await db.query(
+            `UPDATE inquiries SET status = 'In Progress' WHERE id = $1 AND status = 'Pending'`,
+            [inquiry_id]
+        );
 
+        res.status(201).json({ message: 'Chat room created', room: room.rows[0] });
     } catch (error) {
         console.error(error);
-        res.status(500).json({
-            error: 'Server Error'
-        });
+        res.status(500).json({ error: 'Server Error' });
     }
 };
  const getMessages = async (req, res) => {
@@ -96,7 +94,7 @@ const getRooms = async (req, res) => {
         const userId = req.user.id;
         
         const result = await db.query(
-            `SELECT cr.*, i.equipment_post_id, i.buyer_id, i.seller_id
+            `SELECT cr.*, i.equipment_post_id, i.buyer_id, i.seller_id, i.status as inquiry_status
              FROM chat_rooms cr
              JOIN inquiries i ON cr.inquiry_id = i.id
              WHERE i.buyer_id = $1 OR i.seller_id = $1

@@ -9,12 +9,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { EquipmentCard } from "@/components/shared/EquipmentCard";
+import { API_BASE_URL } from "@/lib/api";
 
 export function EquipmentDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { data: user } = useAuth();
   const { data: equipment, isLoading, isError } = useSingleEquipment(id || "");
   const { data: similar } = useSimilarEquipment(id || "");
   const createInquiry = useCreateInquiry();
@@ -46,8 +49,7 @@ export function EquipmentDetails() {
   }
 
   const handleContactSeller = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!user) {
       navigate("/login");
       return;
     }
@@ -77,7 +79,7 @@ export function EquipmentDetails() {
     : "Price on Request";
 
   const imageUrls = (equipment.images || []).map((img: any) => 
-    typeof img === 'string' ? img : `http://localhost:3000${img.image_url}`
+    typeof img === 'string' ? img : `${API_BASE_URL}${img.image_url}`
   );
 
   return (
@@ -231,7 +233,7 @@ export function EquipmentDetails() {
                     <><Mail className="mr-2 h-4 w-4" /> Contact Seller</>
                   )}
                 </Button>
-                {!localStorage.getItem("token") && (
+                {!user && (
                   <p className="text-xs text-center text-slate-500">
                     <Link to="/login" className="text-emerald-600 font-medium hover:underline">Login</Link> required to contact seller
                   </p>
@@ -258,7 +260,7 @@ export function EquipmentDetails() {
                 condition={item.condition}
                 status={item.status}
                 image={(item.images?.[0] as any)?.image_url 
-                  ? `http://localhost:3000${(item.images[0] as any).image_url}` 
+                  ? `${API_BASE_URL}${(item.images[0] as any).image_url}` 
                   : "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"}
               />
             ))}

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
 module.exports = (io) => {
-    // Middleware for socket authentication
+    // ── Socket Authentication Middleware ─────────────────────────────────────
     io.use((socket, next) => {
         const token = socket.handshake.auth.token;
         if (!token) {
@@ -20,7 +20,12 @@ module.exports = (io) => {
     io.on('connection', (socket) => {
         console.log(`User connected: ${socket.user.id} (Socket ID: ${socket.id})`);
 
-        // Join a chat room
+        // ── Per-User Room (for real-time role/notification updates) ──────────
+        // Every user automatically joins their own private room on connect.
+        // Admin controllers call: io.to(`user_${userId}`).emit('role_updated', ...)
+        socket.join(`user_${socket.user.id}`);
+
+        // ── Chat: Join a chat room ───────────────────────────────────────────
         socket.on('join_room', (roomId) => {
             // Check if user is part of this room (for security)
             db.query(
@@ -36,17 +41,17 @@ module.exports = (io) => {
             }).catch(err => console.error("Error joining room:", err));
         });
 
-        // Leave a chat room
+        // ── Chat: Leave a chat room ──────────────────────────────────────────
         socket.on('leave_room', (roomId) => {
             socket.leave(`room_${roomId}`);
             console.log(`User ${socket.user.id} left room_${roomId}`);
         });
 
-        // Send a message
+        // ── Chat: Send a message ─────────────────────────────────────────────
         socket.on('send_message', async (data) => {
             try {
                 const { roomId, message } = data;
-                
+
                 // Save to database
                 const result = await db.query(
                     `INSERT INTO messages (room_id, sender_id, message)

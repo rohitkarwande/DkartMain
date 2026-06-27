@@ -1,18 +1,27 @@
 const db = require('../config/db');
 
-// 1. Dashboard Statistics
+// ─────────────────────────────────────────────────────────────
+// 1. Dashboard Statistics (enhanced)
+// ─────────────────────────────────────────────────────────────
 const getDashboardStats = async (req, res) => {
     try {
-        const usersCount = await db.query("SELECT COUNT(*) FROM users WHERE role = 'user'");
-        const sellersCount = await db.query("SELECT COUNT(*) FROM users WHERE role = 'seller'");
-        const listingsCount = await db.query("SELECT COUNT(*) FROM equipment_posts");
-        const inquiriesCount = await db.query("SELECT COUNT(*) FROM inquiries WHERE status != 'Resolved' AND status != 'Closed'");
-        
+        const [usersCount, sellersCount, listingsCount, inquiriesCount, pendingKycCount, totalRevenueRows] =
+            await Promise.all([
+                db.query("SELECT COUNT(*) FROM users WHERE role = 'user' OR role = 'buyer'"),
+                db.query("SELECT COUNT(*) FROM users WHERE role = 'seller'"),
+                db.query("SELECT COUNT(*) FROM equipment_posts"),
+                db.query("SELECT COUNT(*) FROM inquiries WHERE status != 'Resolved' AND status != 'Closed'"),
+                db.query("SELECT COUNT(*) FROM kyc_documents WHERE status = 'Pending'"),
+                db.query("SELECT COUNT(*) FROM kyc_documents WHERE status = 'Approved'"),
+            ]);
+
         res.json({
             totalUsers: parseInt(usersCount.rows[0].count, 10),
             totalSellers: parseInt(sellersCount.rows[0].count, 10),
             totalListings: parseInt(listingsCount.rows[0].count, 10),
-            activeInquiries: parseInt(inquiriesCount.rows[0].count, 10)
+            activeInquiries: parseInt(inquiriesCount.rows[0].count, 10),
+            pendingKyc: parseInt(pendingKycCount.rows[0].count, 10),
+            approvedKyc: parseInt(totalRevenueRows.rows[0].count, 10),
         });
     } catch (error) {
         console.error(error);
@@ -20,10 +29,38 @@ const getDashboardStats = async (req, res) => {
     }
 };
 
+// ─────────────────────────────────────────────────────────────
 // 2. User Management
+// ─────────────────────────────────────────────────────────────
 const getAllUsers = async (req, res) => {
     try {
-        const result = await db.query("SELECT id, email, phone, is_verified, role, status, created_at FROM users ORDER BY created_at DESC");
+        const { search, role, status } = req.query;
+        let query = `
+            SELECT u.id, u.email, u.phone, u.is_verified, u.role, u.status, u.created_at,
+                   p.first_name, p.last_name, p.company_name,
+                   k.status AS kyc_status, k.document_type
+            FROM users u
+            LEFT JOIN user_profiles p ON u.id = p.user_id
+            LEFT JOIN kyc_documents k ON u.id = k.user_id
+            WHERE 1=1
+        `;
+        const params = [];
+
+        if (search) {
+            params.push(`%${search}%`);
+            query += ` AND (u.email ILIKE $${params.length} OR u.phone ILIKE $${params.length} OR p.first_name ILIKE $${params.length} OR p.company_name ILIKE $${params.length})`;
+        }
+        if (role) {
+            params.push(role);
+            query += ` AND u.role = $${params.length}`;
+        }
+        if (status) {
+            params.push(status);
+            query += ` AND u.status = $${params.length}`;
+        }
+        query += ' ORDER BY u.created_at DESC';
+
+        const result = await db.query(query, params);
         res.json(result.rows);
     } catch (error) {
         console.error(error);
@@ -38,10 +75,11 @@ const updateUserStatus = async (req, res) => {
         if (!['Active', 'Blocked', 'Suspended'].includes(status)) {
             return res.status(400).json({ error: 'Invalid status' });
         }
-        
-        const result = await db.query("UPDATE users SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING id, email, status", [status, id]);
+        const result = await db.query(
+            "UPDATE users SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING id, email, status",
+            [status, id]
+        );
         if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
-        
         res.json({ message: `User status updated to ${status}`, user: result.rows[0] });
     } catch (error) {
         console.error(error);
@@ -49,7 +87,39 @@ const updateUserStatus = async (req, res) => {
     }
 };
 
+const suspendUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query(
+            "UPDATE users SET status = 'Suspended', updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, email, status",
+            [id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+        res.json({ message: 'User suspended successfully', user: result.rows[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error suspending user' });
+    }
+};
+
+const reactivateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query(
+            "UPDATE users SET status = 'Active', updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id, email, status",
+            [id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+        res.json({ message: 'User reactivated successfully', user: result.rows[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error reactivating user' });
+    }
+};
+
+// ─────────────────────────────────────────────────────────────
 // 3. Listing Moderation
+// ─────────────────────────────────────────────────────────────
 const getAllListings = async (req, res) => {
     try {
         const result = await db.query("SELECT * FROM equipment_posts ORDER BY created_at DESC");
@@ -64,8 +134,10 @@ const updateListingStatus = async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
-        
-        const result = await db.query("UPDATE equipment_posts SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *", [status, id]);
+        const result = await db.query(
+            "UPDATE equipment_posts SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *",
+            [status, id]
+        );
         if (result.rows.length === 0) return res.status(404).json({ error: 'Listing not found' });
         res.json({ message: `Listing status updated to ${status}`, post: result.rows[0] });
     } catch (error) {
@@ -74,7 +146,9 @@ const updateListingStatus = async (req, res) => {
     }
 };
 
+// ─────────────────────────────────────────────────────────────
 // 4. Category Management
+// ─────────────────────────────────────────────────────────────
 const getCategories = async (req, res) => {
     try {
         const result = await db.query("SELECT * FROM categories ORDER BY name ASC");
@@ -89,7 +163,10 @@ const createCategory = async (req, res) => {
     try {
         const { name, description } = req.body;
         if (!name) return res.status(400).json({ error: 'Category name required' });
-        const result = await db.query("INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING *", [name, description]);
+        const result = await db.query(
+            "INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING *",
+            [name, description]
+        );
         res.status(201).json({ message: 'Category created', category: result.rows[0] });
     } catch (error) {
         console.error(error);
@@ -125,7 +202,9 @@ const deleteCategory = async (req, res) => {
     }
 };
 
+// ─────────────────────────────────────────────────────────────
 // 5. Inquiry Monitoring
+// ─────────────────────────────────────────────────────────────
 const getAllInquiries = async (req, res) => {
     try {
         const result = await db.query("SELECT * FROM inquiries ORDER BY created_at DESC");
@@ -136,15 +215,212 @@ const getAllInquiries = async (req, res) => {
     }
 };
 
+// ─────────────────────────────────────────────────────────────
+// 6. KYC Management
+// ─────────────────────────────────────────────────────────────
+const getPendingKycApplications = async (req, res) => {
+    try {
+        const { status = 'all', search } = req.query;
+        let query = `
+            SELECT 
+                k.id AS kyc_id,
+                k.user_id,
+                k.document_type,
+                k.document_url,
+                k.document_file_url,
+                k.status AS kyc_status,
+                k.rejection_reason,
+                k.submitted_at,
+                k.reviewed_at,
+                k.reviewed_by,
+                u.email,
+                u.phone,
+                u.role,
+                u.status AS user_status,
+                u.created_at AS user_created_at,
+                p.first_name,
+                p.last_name,
+                p.company_name
+            FROM kyc_documents k
+            JOIN users u ON k.user_id = u.id
+            LEFT JOIN user_profiles p ON u.id = p.user_id
+            WHERE 1=1
+        `;
+        const params = [];
+
+        if (status !== 'all') {
+            params.push(status);
+            query += ` AND k.status = $${params.length}`;
+        }
+        if (search) {
+            params.push(`%${search}%`);
+            query += ` AND (u.email ILIKE $${params.length} OR u.phone ILIKE $${params.length} OR p.first_name ILIKE $${params.length} OR p.company_name ILIKE $${params.length} OR k.document_type ILIKE $${params.length})`;
+        }
+
+        query += ' ORDER BY k.submitted_at DESC';
+
+        const result = await db.query(query, params);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error fetching KYC applications' });
+    }
+};
+
+const getKycDetails = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const result = await db.query(
+            `SELECT 
+                k.*,
+                u.email,
+                u.phone,
+                u.role,
+                u.status AS user_status,
+                u.created_at AS user_created_at,
+                p.first_name,
+                p.last_name,
+                p.company_name,
+                p.bio
+            FROM kyc_documents k
+            JOIN users u ON k.user_id = u.id
+            LEFT JOIN user_profiles p ON u.id = p.user_id
+            WHERE k.user_id = $1`,
+            [userId]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'KYC application not found' });
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error fetching KYC details' });
+    }
+};
+
+const approveKyc = async (req, res) => {
+    const client = await db.pool.connect();
+    try {
+        const { userId } = req.params;
+        const adminId = req.user.id;
+
+        await client.query('BEGIN');
+
+        // 1. Update KYC status
+        const kycResult = await client.query(
+            `UPDATE kyc_documents 
+             SET status = 'Approved', reviewed_at = CURRENT_TIMESTAMP, reviewed_by = $1, rejection_reason = NULL
+             WHERE user_id = $2 
+             RETURNING *`,
+            [adminId, userId]
+        );
+        if (kycResult.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'KYC application not found' });
+        }
+
+        // 2. Promote user role to seller
+        await client.query(
+            "UPDATE users SET role = 'seller', updated_at = CURRENT_TIMESTAMP WHERE id = $1",
+            [userId]
+        );
+
+        // 3. Create a notification for the user
+        await client.query(
+            `INSERT INTO notifications (user_id, type, message, reference_id)
+             VALUES ($1, 'KYC_APPROVED', 'Congratulations! Your Seller account has been approved. You can now list equipment on DKart.', $2)`,
+            [userId, kycResult.rows[0].id]
+        );
+
+        await client.query('COMMIT');
+
+        // 4. Emit real-time socket event to the user's room
+        if (req.io) {
+            req.io.to(`user_${userId}`).emit('role_updated', {
+                role: 'seller',
+                message: '🎉 Congratulations! Your Seller account has been approved. You can now list equipment on DKart.',
+            });
+        }
+
+        res.json({ message: `User ${userId} approved as seller`, kyc: kycResult.rows[0] });
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error(error);
+        res.status(500).json({ error: 'Server error approving KYC' });
+    } finally {
+        client.release();
+    }
+};
+
+const rejectKyc = async (req, res) => {
+    const client = await db.pool.connect();
+    try {
+        const { userId } = req.params;
+        const { reason } = req.body;
+        const adminId = req.user.id;
+
+        if (!reason || !reason.trim()) {
+            return res.status(400).json({ error: 'Rejection reason is required' });
+        }
+
+        await client.query('BEGIN');
+
+        // 1. Update KYC status with reason
+        const kycResult = await client.query(
+            `UPDATE kyc_documents 
+             SET status = 'Rejected', reviewed_at = CURRENT_TIMESTAMP, reviewed_by = $1, rejection_reason = $2
+             WHERE user_id = $3 
+             RETURNING *`,
+            [adminId, reason.trim(), userId]
+        );
+        if (kycResult.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'KYC application not found' });
+        }
+
+        // 2. Keep user role as 'user'/'buyer' — no role change
+
+        // 3. Create a notification for the user
+        await client.query(
+            `INSERT INTO notifications (user_id, type, message, reference_id)
+             VALUES ($1, 'KYC_REJECTED', $2, $3)`,
+            [userId, `Your seller application was not approved. Reason: ${reason.trim()}. You may reapply after making corrections.`, kycResult.rows[0].id]
+        );
+
+        await client.query('COMMIT');
+
+        // 4. Emit real-time socket event to the user's room
+        if (req.io) {
+            req.io.to(`user_${userId}`).emit('role_updated', {
+                role: null,
+                kycStatus: 'Rejected',
+                message: `Your seller application was not approved. Reason: ${reason.trim()}`,
+            });
+        }
+
+        res.json({ message: `KYC application for user ${userId} rejected`, kyc: kycResult.rows[0] });
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error(error);
+        res.status(500).json({ error: 'Server error rejecting KYC' });
+    } finally {
+        client.release();
+    }
+};
+
 module.exports = {
     getDashboardStats,
     getAllUsers,
     updateUserStatus,
+    suspendUser,
+    reactivateUser,
     getAllListings,
     updateListingStatus,
     getCategories,
     createCategory,
     updateCategory,
     deleteCategory,
-    getAllInquiries
+    getAllInquiries,
+    getPendingKycApplications,
+    getKycDetails,
+    approveKyc,
+    rejectKyc,
 };

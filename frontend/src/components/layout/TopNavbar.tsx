@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Search, PlusCircle, LayoutDashboard, MessageSquare, Package, LogOut, ShieldCheck } from "lucide-react";
+import { Search, PlusCircle, LayoutDashboard, MessageSquare, Package, LogOut, ShieldCheck, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth, useLogout } from "@/hooks/useAuth";
@@ -108,6 +108,14 @@ export function TopNavbar() {
                       <span>Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
+                  {user.role === 'admin' && (
+                    <DropdownMenuItem asChild className="cursor-pointer py-2 text-violet-600 focus:text-violet-700 focus:bg-violet-50">
+                      <Link to="/admin">
+                        <Shield className="mr-2 h-4 w-4" />
+                        <span>Admin Panel</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   {isSeller && (
                     <DropdownMenuItem asChild className="cursor-pointer py-2">
                       <Link to="/dashboard/listings">

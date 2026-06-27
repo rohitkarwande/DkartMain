@@ -8,7 +8,7 @@ import {
   MapPin, Calendar, Eye, Upload, Download, X, Edit
 } from "lucide-react";
 import { useState } from "react";
-import { api } from "@/lib/api";
+import { api, API_BASE_URL } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 
 const statusColors: Record<string, string> = {
@@ -165,7 +165,7 @@ export function Listings() {
         <div className="grid gap-4">
           {listings.map((item: Equipment) => {
             const imageUrl = item.images?.[0]
-              ? `http://localhost:3000${(item.images[0] as any).image_url || item.images[0]}`
+              ? `${API_BASE_URL}${(item.images[0] as any).image_url || item.images[0]}`
               : null;
             const formattedPrice = item.price
               ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(item.price)

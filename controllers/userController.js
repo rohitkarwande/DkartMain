@@ -45,44 +45,75 @@ const updateProfile = async (req, res) => {
 
 const submitKyc = async (req, res) => {
     try {
-        const { document_type, document_url } = req.body;
-        
-        if (!document_type || !document_url) {
-            return res.status(400).json({ error: 'document_type and document_url are required' });
+        const { document_type, company_name } = req.body;
+        // document_url can be a text reference OR come from the body if no file
+        const document_url = req.body.document_url || null;
+        // If a file was uploaded via multer, capture its server-side path
+        const document_file_url = req.file ? `/uploads/kyc/${req.file.filename}` : null;
+
+        if (!document_type) {
+            return res.status(400).json({ error: 'document_type is required' });
+        }
+        if (!document_url && !document_file_url) {
+            return res.status(400).json({ error: 'Either a document number or a document file upload is required' });
         }
 
         const result = await db.query(
-            `INSERT INTO kyc_documents (user_id, document_type, document_url)
-             VALUES ($1, $2, $3)
+            `INSERT INTO kyc_documents (user_id, document_type, document_url, document_file_url)
+             VALUES ($1, $2, $3, $4)
              ON CONFLICT (user_id) DO UPDATE
              SET document_type = EXCLUDED.document_type,
-                 document_url = EXCLUDED.document_url,
+                 document_url = COALESCE(EXCLUDED.document_url, kyc_documents.document_url),
+                 document_file_url = COALESCE(EXCLUDED.document_file_url, kyc_documents.document_file_url),
                  status = 'Pending',
+                 rejection_reason = NULL,
                  submitted_at = CURRENT_TIMESTAMP
              RETURNING *`,
-            [req.user.id, document_type, document_url]
+            [req.user.id, document_type, document_url, document_file_url]
         );
 
-        res.json({ message: 'KYC submitted successfully', kyc: result.rows[0] });
+        // Update company name in profile if provided
+        if (company_name && company_name.trim()) {
+            await db.query(
+                `INSERT INTO user_profiles (user_id, company_name)
+                 VALUES ($1, $2)
+                 ON CONFLICT (user_id) DO UPDATE SET company_name = EXCLUDED.company_name, updated_at = CURRENT_TIMESTAMP`,
+                [req.user.id, company_name.trim()]
+            );
+        }
+
+        res.json({ message: 'KYC submitted successfully. Pending admin review.', kyc: result.rows[0] });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error submitting KYC' });
     }
 };
 
-const becomeSeller = async (req, res) => {
+const getKycStatus = async (req, res) => {
     try {
-        // In a real app, this might check KYC status before upgrading
         const result = await db.query(
-            `UPDATE users SET role = 'seller' WHERE id = $1 RETURNING id, role`,
+            `SELECT id, document_type, document_url, document_file_url, status, rejection_reason, submitted_at, reviewed_at
+             FROM kyc_documents
+             WHERE user_id = $1
+             ORDER BY submitted_at DESC
+             LIMIT 1`,
             [req.user.id]
         );
-        
-        res.json({ message: 'Successfully upgraded to seller', user: result.rows[0] });
+        if (result.rows.length === 0) {
+            return res.json({ status: 'not_submitted' });
+        }
+        res.json(result.rows[0]);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Error upgrading to seller' });
+        res.status(500).json({ error: 'Error fetching KYC status' });
     }
+};
+
+// Locked: role upgrade is admin-only via /api/admin/kyc/:userId/approve
+const becomeSeller = async (req, res) => {
+    return res.status(403).json({
+        error: 'Role upgrade requires admin approval. Please submit a KYC application and wait for review.',
+    });
 };
 
 const getDashboard = async (req, res) => {
@@ -152,4 +183,4 @@ const verifyContact = async (req, res) => {
     }
 };
 
-module.exports = { getProfile, updateProfile, submitKyc, becomeSeller, getDashboard, addContact, verifyContact };
+module.exports = { getProfile, updateProfile, submitKyc, getKycStatus, becomeSeller, getDashboard, addContact, verifyContact };

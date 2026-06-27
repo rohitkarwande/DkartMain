@@ -8,6 +8,8 @@ import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 
+import { API_BASE_URL } from "@/lib/api";
+
 const CATEGORIES = [
   { name: "MRI Machines", icon: Activity, slug: "MRI", color: "bg-blue-50 text-blue-600 border-blue-100" },
   { name: "X-Ray Machines", icon: FileDigit, slug: "X-Ray", color: "bg-slate-50 text-slate-600 border-slate-200" },
@@ -159,7 +161,7 @@ export function Home() {
                 condition={equipment.condition}
                 status={equipment.status}
                 image={equipment.images?.[0]?.image_url 
-                  ? `http://localhost:3000${equipment.images[0].image_url}` 
+                  ? `${API_BASE_URL}${equipment.images[0].image_url}` 
                   : "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"}
               />
             ))}

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const analyticsController = require('../controllers/analyticsController');
 const authMiddleware = require('../middlewares/auth');
-const isAdmin = require('../middlewares/role');
+const { isAdmin } = require('../middlewares/role');
 
 // Advanced Analytics - Admin only
 router.use(authMiddleware, isAdmin);

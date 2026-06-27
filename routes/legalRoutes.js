@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const legalController = require('../controllers/legalController');
 const authMiddleware = require('../middlewares/auth');
-const isAdmin = require('../middlewares/role');
+const { isAdmin } = require('../middlewares/role');
 
 // User routes
 router.post('/', authMiddleware, legalController.submitLegalQuery);

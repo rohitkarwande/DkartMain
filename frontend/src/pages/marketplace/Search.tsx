@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Search as SearchIcon, Filter, Loader2, SlidersHorizontal, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
+import { API_BASE_URL } from "@/lib/api";
+
 const CATEGORIES = ["MRI", "X-Ray", "Cathlab", "ECG", "Ultrasound", "Refurbished", "Spare_Parts", "Monitoring", "Surgical", "Diagnostic"];
 const CONDITIONS = ["New", "Refurbished", "Used", "Spare Parts"];
 
@@ -182,7 +184,7 @@ export function Search() {
                   condition={item.condition}
                   status={item.status}
                   image={item.images?.[0]?.image_url 
-                    ? `http://localhost:3000${item.images[0].image_url}` 
+                    ? `${API_BASE_URL}${item.images[0].image_url}` 
                     : "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"}
                 />
               ))}

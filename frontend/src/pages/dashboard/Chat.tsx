@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useChatRooms, useChatMessages, useSendMessage } from "@/hooks/useChat";
+import { useUpdateInquiryStatus } from "@/hooks/useInquiries";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, Send, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,10 +18,15 @@ export function Chat() {
   const [activeRoomId, setActiveRoomId] = useState<number | null>(null);
   const { data: messages, isLoading: isLoadingMessages } = useChatMessages(activeRoomId);
   const sendMessage = useSendMessage();
+  const updateInquiryStatus = useUpdateInquiryStatus();
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const location = useLocation();
+
+  const activeRoom = rooms?.find((r: any) => r.id === activeRoomId);
+  const isSeller = activeRoom ? user?.id === activeRoom.seller_id : false;
+  const isDealLocked = activeRoom ? ['Deal Locked', 'Closed', 'Closed_Won', 'Deal Closed'].includes(activeRoom.inquiry_status) : false;
 
   // Initialize socket
   useEffect(() => {
@@ -83,6 +89,17 @@ export function Chat() {
       setNewMessage("");
     } catch (error) {
       console.error("Failed to send message", error);
+    }
+  };
+
+  const handleLockDeal = async () => {
+    if (!activeRoom) return;
+    try {
+      await updateInquiryStatus.mutateAsync({ id: activeRoom.inquiry_id, status: 'Deal Locked' });
+      // Invalidate chat rooms to get the updated status
+      queryClient.invalidateQueries({ queryKey: ['chat', 'rooms'] });
+    } catch (error) {
+      console.error("Failed to lock deal", error);
     }
   };
 
@@ -153,6 +170,27 @@ export function Chat() {
                   <h3 className="font-semibold text-slate-900">Chat Room #{activeRoomId}</h3>
                   <p className="text-xs text-emerald-600 font-medium">Online</p>
                 </div>
+              </div>
+              
+              <div>
+                {isDealLocked ? (
+                  <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200">
+                    <span className="text-sm font-semibold">Deal Locked 🔒</span>
+                  </div>
+                ) : isSeller ? (
+                  <Button 
+                    onClick={handleLockDeal}
+                    disabled={updateInquiryStatus.isPending}
+                    className="bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-sm"
+                  >
+                    {updateInquiryStatus.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <span className="mr-2">🔒</span>
+                    )}
+                    Lock Deal
+                  </Button>
+                ) : null}
               </div>
             </div>
             

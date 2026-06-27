@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const equipmentController = require('../controllers/equipmentController');
 const authMiddleware = require('../middlewares/auth');
-const isAdmin = require('../middlewares/role');
+const { isAdmin } = require('../middlewares/role');
 const upload = require('../middlewares/upload');
 
 // Public routes (or auth depending on requirements, let's keep GET public but MyPosts auth)

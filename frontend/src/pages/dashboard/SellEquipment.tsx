@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useCreateEquipment, useSingleEquipment, useUpdateEquipment, EQUIPMENT_CATEGORIES, EQUIPMENT_CONDITIONS } from "@/hooks/useEquipment";
 import { useNavigate, useParams } from "react-router-dom";
+import { API_BASE_URL } from "@/lib/api";
 import { WizardStepper } from "@/components/shared/WizardStepper";
 import type { WizardStep } from "@/components/shared/WizardStepper";
 import { UploadZone } from "@/components/shared/UploadZone";
@@ -137,7 +138,7 @@ export function SellEquipment() {
     if (formData.manufacturingYear) data.append("manufacturingYear", formData.manufacturingYear);
 
     formData.files.forEach((file) => {
-      data.append("newImages", file);
+      data.append(isEditing && id ? "newImages" : "images", file);
     });
 
     formData.deletedImages.forEach((imgId) => {
@@ -336,7 +337,7 @@ export function SellEquipment() {
                       {/* Existing Images */}
                       {formData.existingImages.map((img) => (
                         <div key={`existing-${img.id}`} className="group relative aspect-square rounded-xl overflow-hidden border-2 border-slate-200 bg-white shadow-sm hover:border-emerald-500 transition-colors">
-                          <img src={`http://localhost:3000${img.image_url}`} alt="" className="w-full h-full object-cover" />
+                          <img src={`${API_BASE_URL}${img.image_url}`} alt="" className="w-full h-full object-cover" />
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <button
                               type="button"
@@ -445,7 +446,7 @@ export function SellEquipment() {
                       />
                     ) : formData.existingImages.length > 0 ? (
                       <img 
-                        src={`http://localhost:3000${formData.existingImages[0].image_url}`} 
+                        src={`${API_BASE_URL}${formData.existingImages[0].image_url}`} 
                         alt="Preview" 
                         className="w-full h-full object-cover" 
                       />
