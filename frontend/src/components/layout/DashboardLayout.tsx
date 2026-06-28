@@ -4,8 +4,8 @@ import { LayoutDashboard, Package, MessageSquare, MessageCircle, ShoppingBag, Lo
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard, exact: true },
-  { label: "My Profile", href: "/dashboard/profile", icon: User },
-  { label: "My Listings", href: "/dashboard/listings", icon: Package, sellerOnly: true },
+  { label: "Profile", href: "/dashboard/profile", icon: User },
+  { label: "Listings", href: "/dashboard/listings", icon: Package, sellerOnly: true },
   { label: "Inquiries", href: "/dashboard/inquiries", icon: Activity },
   { label: "Chat", href: "/dashboard/chat", icon: MessageCircle },
 ];
@@ -23,11 +23,13 @@ export function DashboardLayout() {
     );
   }
 
+  const visibleItems = NAV_ITEMS.filter(item => !item.sellerOnly || isSeller);
+
   return (
-    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 pb-20 md:pb-8">
       <div className="flex gap-8 relative">
         
-        {/* Left sidebar navigation */}
+        {/* Left sidebar navigation — desktop only */}
         <aside className="w-64 flex-shrink-0 hidden md:block">
           <div className="bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-200/40 overflow-hidden sticky top-8">
             {/* User info */}
@@ -48,7 +50,7 @@ export function DashboardLayout() {
             
             {/* Nav links */}
             <nav className="p-3 space-y-1">
-              {NAV_ITEMS.filter(item => !item.sellerOnly || isSeller).map((item) => {
+              {visibleItems.map((item) => {
                 const isActive = item.exact 
                   ? location.pathname === item.href 
                   : location.pathname.startsWith(item.href);
@@ -96,6 +98,31 @@ export function DashboardLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* ── Mobile Bottom Navigation Bar ─────────────────────────────────── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-lg">
+        <div className="flex items-center justify-around px-2 py-1">
+          {visibleItems.map((item) => {
+            const isActive = item.exact 
+              ? location.pathname === item.href 
+              : location.pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className={`flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all ${
+                  isActive ? 'text-emerald-600' : 'text-slate-400'
+                }`}
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="text-[10px] font-semibold">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
+
+

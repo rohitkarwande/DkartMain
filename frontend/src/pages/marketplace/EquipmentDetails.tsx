@@ -93,70 +93,11 @@ export function EquipmentDetails() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         
-        {/* Left: Images + Details */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* Image Gallery */}
-          <div className="bg-white rounded-2xl overflow-hidden border shadow-sm">
-            <div className="aspect-video bg-slate-100 flex items-center justify-center">
-              {imageUrls.length > 0 ? (
-                <img 
-                  src={imageUrls[0]} 
-                  alt={equipment.title} 
-                  className="w-full h-full object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"; }}
-                />
-              ) : (
-                <div className="text-center text-slate-400">
-                  <p className="text-lg font-medium">No Images Available</p>
-                </div>
-              )}
-            </div>
-            {imageUrls.length > 1 && (
-              <div className="flex gap-2 p-3 overflow-x-auto bg-slate-50 border-t">
-                {imageUrls.slice(1).map((url: string, i: number) => (
-                  <img key={i} src={url} alt="" className="h-16 w-16 rounded-lg object-cover border shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Specs */}
-          <div className="bg-white p-6 rounded-2xl border shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-4 pb-3 border-b">Equipment Specifications</h2>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              {[
-                ["Category", equipment.category],
-                ["Brand", equipment.brand],
-                ["Model", equipment.model],
-                ["Year of Manufacture", equipment.manufacturing_year || "Not specified"],
-                ["Condition", equipment.condition],
-                ["Status", equipment.status],
-              ].map(([label, value]) => (
-                <div key={label}>
-                  <span className="text-slate-500 block mb-0.5">{label}</span>
-                  <span className="font-semibold text-slate-900">{value || "—"}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Description */}
-          {equipment.description && (
-            <div className="bg-white p-6 rounded-2xl border shadow-sm">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">Description</h2>
-              <p className="text-slate-600 leading-relaxed whitespace-pre-wrap text-sm">{equipment.description}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Right: Price + CTA */}
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-2xl border shadow-sm sticky top-20">
+        {/* Right: Price + CTA — shows FIRST on mobile via order */}
+        <div className="space-y-6 lg:order-last">
+          <div className="bg-white p-5 md:p-6 rounded-2xl border shadow-sm lg:sticky lg:top-20">
             {/* Status badge */}
             <div className="flex items-center justify-between mb-4">
               <Badge variant="outline" className="capitalize text-xs">{equipment.category}</Badge>
@@ -241,6 +182,65 @@ export function EquipmentDetails() {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Left: Images + Details */}
+        <div className="lg:col-span-2 space-y-6 lg:order-first">
+          
+          {/* Image Gallery */}
+          <div className="bg-white rounded-2xl overflow-hidden border shadow-sm">
+            <div className="aspect-video bg-slate-100 flex items-center justify-center">
+              {imageUrls.length > 0 ? (
+                <img 
+                  src={imageUrls[0]} 
+                  alt={equipment.title} 
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"; }}
+                />
+              ) : (
+                <div className="text-center text-slate-400">
+                  <p className="text-lg font-medium">No Images Available</p>
+                </div>
+              )}
+            </div>
+            {imageUrls.length > 1 && (
+              <div className="flex gap-2 p-3 overflow-x-auto bg-slate-50 border-t">
+                {imageUrls.slice(1).map((url: string, i: number) => (
+                  <img key={i} src={url} alt="" className="h-16 w-16 rounded-lg object-cover border shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Specs */}
+          <div className="bg-white p-6 rounded-2xl border shadow-sm">
+            <h2 className="text-lg font-bold text-slate-900 mb-4 pb-3 border-b">Equipment Specifications</h2>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              {[
+                ["Category", equipment.category],
+                ["Brand", equipment.brand],
+                ["Model", equipment.model],
+                ["Year of Manufacture", equipment.manufacturing_year || "Not specified"],
+                ["Condition", equipment.condition],
+                ["Status", equipment.status],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <span className="text-slate-500 block mb-0.5">{label}</span>
+                  <span className="font-semibold text-slate-900">{value || "—"}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Description */}
+          {equipment.description && (
+            <div className="bg-white p-6 rounded-2xl border shadow-sm">
+              <h2 className="text-lg font-bold text-slate-900 mb-4">Description</h2>
+              <p className="text-slate-600 leading-relaxed whitespace-pre-wrap text-sm">{equipment.description}</p>
+            </div>
+          )}
         </div>
       </div>
 

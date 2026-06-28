@@ -105,8 +105,8 @@ export function Chat() {
 
   return (
     <div className="h-[calc(100vh-8rem)] flex border rounded-xl overflow-hidden bg-white shadow-sm">
-      {/* Rooms Sidebar */}
-      <div className="w-1/3 border-r bg-slate-50 flex flex-col">
+      {/* Rooms Sidebar - full width on mobile when no room selected, 1/3 on desktop */}
+      <div className={`${activeRoomId ? 'hidden md:flex' : 'flex'} md:flex w-full md:w-1/3 border-r bg-slate-50 flex-col`}>
         <div className="p-4 border-b bg-white">
           <h2 className="font-semibold text-lg text-slate-900">Messages</h2>
         </div>
@@ -155,13 +155,17 @@ export function Chat() {
         </ScrollArea>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-[#efeae2]">
+      {/* Chat Area - full width on mobile when room selected */}
+      <div className={`${activeRoomId ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-[#efeae2]`}>
         {activeRoomId ? (
           <>
-            <div className="p-4 border-b flex items-center justify-between bg-white shadow-sm z-10">
+            <div className="p-3 md:p-4 border-b flex items-center justify-between bg-white shadow-sm z-10">
               <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10 border">
+                {/* Mobile back button */}
+                <button className="md:hidden text-slate-500 hover:text-slate-800 mr-1" onClick={() => setActiveRoomId(null)}>
+                  ←
+                </button>
+                <Avatar className="h-9 w-9 md:h-10 md:w-10 border">
                    <AvatarFallback className="bg-emerald-100 text-emerald-700 font-medium">
                       #
                    </AvatarFallback>

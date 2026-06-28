@@ -13,21 +13,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 
 import { AdminNotifications } from "./AdminNotifications";
-
 import { UserLocation } from "./UserLocation";
 
 export function TopNavbar() {
   const { data: user, isLoading } = useAuth();
   const logout = useLogout();
   const navigate = useNavigate();
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const q = formData.get("q");
     if (q) navigate(`/search?keyword=${encodeURIComponent(q as string)}`);
+    setMobileSearchOpen(false);
   };
 
   const isSeller = user?.role === 'seller' || user?.role === 'admin';
@@ -38,16 +40,16 @@ export function TopNavbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-4 md:gap-6">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex h-14 md:h-16 items-center justify-between gap-2 md:gap-6">
           
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
               <div className="bg-emerald-600 p-1.5 rounded-lg">
-                <span className="text-white font-bold text-lg leading-none block">DK</span>
+                <span className="text-white font-bold text-base md:text-lg leading-none block">DK</span>
               </div>
-              <span className="font-bold text-xl tracking-tight hidden sm:block text-slate-900">
+              <span className="font-bold text-lg md:text-xl tracking-tight hidden sm:block text-slate-900">
                 D<span className="text-emerald-600">Kart</span>
               </span>
             </Link>
@@ -56,7 +58,7 @@ export function TopNavbar() {
             {user && <UserLocation />}
           </div>
 
-          {/* Global Search */}
+          {/* Global Search — desktop */}
           <div className="flex-1 max-w-2xl hidden md:block">
             <form onSubmit={handleSearch} className="relative w-full">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -70,15 +72,25 @@ export function TopNavbar() {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
+            {/* Mobile search button */}
+            <button
+              className="md:hidden p-2 rounded-lg text-slate-500 hover:text-emerald-600 hover:bg-slate-100"
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+
             {/* Sell Equipment CTA */}
             <Button 
               onClick={() => navigate(isSeller ? '/sell' : user ? '/kyc' : '/signup')}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm hidden sm:flex mr-2"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm hidden sm:flex"
               size="sm"
             >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Sell Equipment
+              <PlusCircle className="mr-1.5 h-4 w-4" />
+              <span className="hidden md:inline">Sell Equipment</span>
+              <span className="md:hidden">Sell</span>
             </Button>
 
             {/* Auth Controls */}
@@ -159,18 +171,36 @@ export function TopNavbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Button variant="ghost" asChild size="sm" className="hidden sm:flex text-slate-700 hover:text-emerald-600 hover:bg-emerald-50">
                   <Link to="/login">Login</Link>
                 </Button>
                 <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                  <Link to="/signup">Sign Up Free</Link>
+                  <Link to="/signup">Sign Up</Link>
                 </Button>
               </div>
             )}
           </div>
         </div>
+
+        {/* Mobile Search Bar — slides in below the navbar */}
+        {mobileSearchOpen && (
+          <div className="md:hidden pb-3">
+            <form onSubmit={handleSearch} className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                name="q"
+                type="search"
+                autoFocus
+                placeholder="Search equipment..."
+                className="w-full pl-10 h-10 bg-slate-100 border-transparent focus-visible:bg-white"
+              />
+            </form>
+          </div>
+        )}
       </div>
     </header>
   );
 }
+
+
