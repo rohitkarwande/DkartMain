@@ -40,7 +40,8 @@ const io = new Server(server, {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public')); // Serve frontend files including /uploads
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'))); // Serve uploads
+app.use(express.static(path.join(__dirname, 'frontend/dist'))); // Serve React app
 app.use(apiLimiter); // Apply global rate limiter
 
 // Make io accessible to routes if needed
@@ -69,6 +70,11 @@ app.use('/api/vendor', vendorRoutes);
 app.use('/api/service-requests', serviceRequestRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/health', healthRoutes);
+
+// React router catch-all route
+app.get(/(.*)/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
+});
 
 // Initialize Socket.IO handlers
 require('./sockets/chatSocket')(io);
