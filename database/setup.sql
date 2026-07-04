@@ -83,6 +83,8 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     company_name VARCHAR(150),
     avatar_url TEXT,
     bio TEXT,
+    profession VARCHAR(100),
+    location VARCHAR(150),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
