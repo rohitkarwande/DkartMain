@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     company_name VARCHAR(150),
     avatar_url TEXT,
     bio TEXT,
+    age INTEGER,
     profession VARCHAR(100),
     location VARCHAR(150),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -401,4 +402,5 @@ CREATE INDEX IF NOT EXISTS idx_ip_blacklist_ip ON ip_blacklist(ip_address);
          f i l t e r s   J S O N B , 
          c r e a t e d _ a t   T I M E S T A M P   W I T H   T I M E   Z O N E   D E F A U L T   C U R R E N T _ T I M E S T A M P 
  ) ;  
+ A L T E R   T A B L E   u s e r _ p r o f i l e s   A D D   C O L U M N   I F   N O T   E X I S T S   a g e   I N T E G E R ;  
  
