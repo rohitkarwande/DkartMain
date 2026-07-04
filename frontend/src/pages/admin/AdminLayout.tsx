@@ -12,7 +12,6 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { useAdminStats } from "@/hooks/useAdminKyc";
-import { AdminNotifications } from "@/components/layout/AdminNotifications";
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard, exact: true },
@@ -79,7 +78,7 @@ export function AdminLayout() {
                 ? location.pathname === item.href
                 : location.pathname.startsWith(item.href);
               const badgeCount =
-                item.badge && stats ? (stats as Record<string, number>)[item.badge] : 0;
+                item.badge && stats ? (stats as unknown as Record<string, number>)[item.badge] : 0;
 
               return (
                 <Link
@@ -149,7 +148,7 @@ export function AdminLayout() {
               ? location.pathname === item.href 
               : location.pathname.startsWith(item.href);
             const badgeCount =
-                item.badge && stats ? (stats as Record<string, number>)[item.badge] : 0;
+                item.badge && stats ? (stats as unknown as Record<string, number>)[item.badge] : 0;
 
             return (
               <Link

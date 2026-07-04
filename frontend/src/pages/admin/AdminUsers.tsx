@@ -9,7 +9,6 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Filter,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -85,8 +84,8 @@ function ConfirmDialog({
 
 export function AdminUsers() {
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [role setRoleFilter] = useState("");
+  const [status setStatusFilter] = useState("");
   const [confirmAction, setConfirmAction] = useState<{ type: "suspend" | "reactivate"; user: AdminUser } | null>(null);
 
   const { data: users, isLoading } = useAdminUsers({

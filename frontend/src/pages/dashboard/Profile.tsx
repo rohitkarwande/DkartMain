@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Mail, Phone, CheckCircle2, ShieldAlert, ShieldCheck, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export function Profile() {
-  const { user, setUser } = useAuth();
+  const { data: user } = useAuth();
+  const queryClient = useQueryClient();
   
   // Profile state
   const [loading, setLoading] = useState(true);
@@ -64,7 +66,7 @@ export function Profile() {
       });
       // Update context user if it differs
       if (user && (user.email !== data.email || user.phone !== data.phone)) {
-        setUser({ ...user, email: data.email, phone: data.phone });
+        queryClient.setQueryData(['user'], { ...user, email: data.email, phone: data.phone });
       }
     } catch (err) {
       console.error(err);

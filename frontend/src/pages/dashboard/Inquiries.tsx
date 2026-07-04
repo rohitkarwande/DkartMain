@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useSellerInquiries, useBuyerInquiries, useUpdateInquiryStatus } from "@/hooks/useInquiries";
 import { useCreateChatRoom } from "@/hooks/useChat";
 import { Loader2, MessageSquare, Check, X } from "lucide-react";

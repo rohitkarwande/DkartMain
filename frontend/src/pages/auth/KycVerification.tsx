@@ -29,7 +29,6 @@ const DOC_TYPES = [
 ];
 
 export function KycVerification() {
-  const navigate = useNavigate();
   const submitKyc = useSubmitKyc();
   const { data: kycStatus, isLoading: kycLoading } = useKycStatus();
 

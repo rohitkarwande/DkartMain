@@ -15,7 +15,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 
-import { AdminNotifications } from "./AdminNotifications";
 import { UserLocation } from "./UserLocation";
 
 export function TopNavbar() {
@@ -33,7 +32,6 @@ export function TopNavbar() {
   };
 
   const isSeller = user?.role === 'seller' || user?.role === 'admin';
-  const isAdmin = user?.role === 'admin';
   const initials = user?.first_name 
     ? user.first_name.charAt(0).toUpperCase() 
     : (user?.email ? user.email.charAt(0).toUpperCase() : 'U');

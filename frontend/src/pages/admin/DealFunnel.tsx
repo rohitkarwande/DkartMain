@@ -7,8 +7,6 @@ import {
   Loader2,
   MessageSquare,
   Lock,
-  CheckCircle2,
-  XCircle,
   Users,
   BarChart2,
   Package,
@@ -53,7 +51,7 @@ function MiniBar({ value, max, color }: { value: number; max: number; color: str
 }
 
 // ─── Funnel Step ──────────────────────────────────────────────────────────────
-function FunnelStep({
+export function FunnelStep({
   icon: Icon,
   label,
   sublabel,

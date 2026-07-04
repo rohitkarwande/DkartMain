@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { 
-  Loader2, PlusCircle, Trash2, Archive, CheckCircle2, 
+  Loader2, PlusCircle, Trash2, CheckCircle2, 
   MapPin, Calendar, Eye, Upload, Download, X, Edit
 } from "lucide-react";
 import { useState } from "react";

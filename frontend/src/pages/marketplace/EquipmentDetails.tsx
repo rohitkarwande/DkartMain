@@ -1,10 +1,9 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useSingleEquipment, useSimilarEquipment } from "@/hooks/useEquipment";
-import type { Equipment } from "@/hooks/useEquipment";
 import { useCreateInquiry } from "@/hooks/useInquiries";
 import { 
   Loader2, MapPin, Tag, ShieldCheck, Mail, ArrowLeft, 
-  Phone, Building2, Calendar, CheckCircle2
+  Calendar, CheckCircle2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

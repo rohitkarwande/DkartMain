@@ -26,7 +26,7 @@ export function Chat() {
 
   const activeRoom = rooms?.find((r: any) => r.id === activeRoomId);
   const isSeller = activeRoom ? user?.id === activeRoom.seller_id : false;
-  const isDealLocked = activeRoom ? ['Deal Locked', 'Closed', 'Closed_Won', 'Deal Closed'].includes(activeRoom.inquiry_status) : false;
+  const isDealLocked = activeRoom ? ['Deal Locked', 'Closed', 'Closed_Won', 'Deal Closed'].includes((activeRoom as any).inquiry_status) : false;
 
   // Initialize socket
   useEffect(() => {

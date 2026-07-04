@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, MessageSquare, MessageCircle, ShoppingBag, Loader2, User, Activity, Shield } from "lucide-react";
+import { LayoutDashboard, Package, MessageCircle, ShoppingBag, Loader2, User, Activity, Shield } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard, exact: true },

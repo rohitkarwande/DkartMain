@@ -9,7 +9,6 @@ import {
   ShieldAlert,
   Search,
   Loader2,
-  Trash2,
   Plus,
   ShieldCheck,
   History,
