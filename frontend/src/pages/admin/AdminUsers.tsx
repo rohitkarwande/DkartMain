@@ -84,8 +84,8 @@ function ConfirmDialog({
 
 export function AdminUsers() {
   const [search, setSearch] = useState("");
-  const [role setRoleFilter] = useState("");
-  const [status setStatusFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [confirmAction, setConfirmAction] = useState<{ type: "suspend" | "reactivate"; user: AdminUser } | null>(null);
 
   const { data: users, isLoading } = useAdminUsers({
