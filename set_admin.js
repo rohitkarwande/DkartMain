@@ -1,18 +1,26 @@
-// Promote existing rohitkarwande82@gmail.com account to admin
+// Promote an existing account to admin based on command-line argument
 const { Pool } = require('pg');
 require('dotenv').config();
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
+const targetEmail = process.argv[2];
+
 (async () => {
+    if (!targetEmail) {
+        console.error('❌ Please provide an email address. Example: node set_admin.js myemail@example.com');
+        process.exit(1);
+    }
+
     const client = await pool.connect();
     try {
         // Promote existing account
         const result = await client.query(
-            "UPDATE users SET role = 'admin', status = 'Active', is_verified = TRUE WHERE email = 'rohitkarwande82@gmail.com' RETURNING id, email, role, status"
+            "UPDATE users SET role = 'admin', status = 'Active', is_verified = TRUE WHERE email = $1 RETURNING id, email, role, status",
+            [targetEmail]
         );
 
         if (result.rows.length === 0) {
-            console.log('❌ Account not found. Try with phone number instead.');
+            console.log(`❌ Account with email ${targetEmail} not found. Please register first.`);
         } else {
             console.log('✅ Admin promoted:');
             result.rows.forEach(r => console.log(`  ID: ${r.id} | Email: ${r.email} | Role: ${r.role}`));
