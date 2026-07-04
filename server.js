@@ -38,6 +38,7 @@ const io = new Server(server, {
 });
 
 // Middleware
+app.set('trust proxy', 1); // Trust first proxy (Nginx) for correct rate limiting IP
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'))); // Serve uploads
