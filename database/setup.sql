@@ -355,3 +355,50 @@ CREATE TABLE IF NOT EXISTS ip_blacklist (
 );
 
 CREATE INDEX IF NOT EXISTS idx_ip_blacklist_ip ON ip_blacklist(ip_address);
+
+ - -   A d d i t i o n a l   m i s s i n g   t a b l e s   f o r   c o m p l e t i o n 
+ C R E A T E   T A B L E   I F   N O T   E X I S T S   n o t i f i c a t i o n s   ( 
+         i d   S E R I A L   P R I M A R Y   K E Y , 
+         u s e r _ i d   I N T E G E R   R E F E R E N C E S   u s e r s ( i d )   O N   D E L E T E   C A S C A D E , 
+         t y p e   V A R C H A R ( 1 0 0 ) , 
+         m e s s a g e   T E X T   N O T   N U L L , 
+         r e f e r e n c e _ i d   V A R C H A R ( 1 0 0 ) , 
+         i s _ r e a d   B O O L E A N   D E F A U L T   F A L S E , 
+         c r e a t e d _ a t   T I M E S T A M P   W I T H   T I M E   Z O N E   D E F A U L T   C U R R E N T _ T I M E S T A M P 
+ ) ; 
+ 
+ C R E A T E   T A B L E   I F   N O T   E X I S T S   f r a u d _ r e p o r t s   ( 
+         i d   S E R I A L   P R I M A R Y   K E Y , 
+         r e p o r t e r _ i d   I N T E G E R   R E F E R E N C E S   u s e r s ( i d )   O N   D E L E T E   C A S C A D E , 
+         r e p o r t e d _ u s e r _ i d   I N T E G E R   R E F E R E N C E S   u s e r s ( i d )   O N   D E L E T E   C A S C A D E , 
+         e q u i p m e n t _ p o s t _ i d   U U I D   R E F E R E N C E S   e q u i p m e n t _ p o s t s ( i d )   O N   D E L E T E   C A S C A D E , 
+         r e a s o n   V A R C H A R ( 2 5 5 )   N O T   N U L L , 
+         d e s c r i p t i o n   T E X T , 
+         s t a t u s   V A R C H A R ( 5 0 )   D E F A U L T   ' P e n d i n g ' , 
+         c r e a t e d _ a t   T I M E S T A M P   W I T H   T I M E   Z O N E   D E F A U L T   C U R R E N T _ T I M E S T A M P 
+ ) ; 
+ 
+ C R E A T E   T A B L E   I F   N O T   E X I S T S   s e l l e r _ r e v i e w s   ( 
+         i d   S E R I A L   P R I M A R Y   K E Y , 
+         s e l l e r _ i d   I N T E G E R   R E F E R E N C E S   u s e r s ( i d )   O N   D E L E T E   C A S C A D E , 
+         r e v i e w e r _ i d   I N T E G E R   R E F E R E N C E S   u s e r s ( i d )   O N   D E L E T E   C A S C A D E , 
+         r a t i n g   I N T E G E R   C H E C K   ( r a t i n g   > =   1   A N D   r a t i n g   < =   5 ) , 
+         r e v i e w _ t e x t   T E X T , 
+         c r e a t e d _ a t   T I M E S T A M P   W I T H   T I M E   Z O N E   D E F A U L T   C U R R E N T _ T I M E S T A M P 
+ ) ; 
+ 
+ C R E A T E   T A B L E   I F   N O T   E X I S T S   b o o k m a r k s   ( 
+         i d   S E R I A L   P R I M A R Y   K E Y , 
+         u s e r _ i d   I N T E G E R   R E F E R E N C E S   u s e r s ( i d )   O N   D E L E T E   C A S C A D E , 
+         e q u i p m e n t _ p o s t _ i d   U U I D   R E F E R E N C E S   e q u i p m e n t _ p o s t s ( i d )   O N   D E L E T E   C A S C A D E , 
+         c r e a t e d _ a t   T I M E S T A M P   W I T H   T I M E   Z O N E   D E F A U L T   C U R R E N T _ T I M E S T A M P , 
+         U N I Q U E   ( u s e r _ i d ,   e q u i p m e n t _ p o s t _ i d ) 
+ ) ; 
+ 
+ C R E A T E   T A B L E   I F   N O T   E X I S T S   s a v e d _ s e a r c h e s   ( 
+         i d   S E R I A L   P R I M A R Y   K E Y , 
+         u s e r _ i d   I N T E G E R   R E F E R E N C E S   u s e r s ( i d )   O N   D E L E T E   C A S C A D E , 
+         f i l t e r s   J S O N B , 
+         c r e a t e d _ a t   T I M E S T A M P   W I T H   T I M E   Z O N E   D E F A U L T   C U R R E N T _ T I M E S T A M P 
+ ) ;  
+ 
