@@ -21,7 +21,8 @@ export function useSellerInquiries() {
     queryKey: ['inquiries', 'seller'],
     queryFn: async () => {
       const res = await api.get('/inquiries/seller');
-      return res.data as Inquiry[];
+      const items = res.data?.inquiries || res.data;
+      return (Array.isArray(items) ? items : []) as Inquiry[];
     },
   });
 }
@@ -32,7 +33,8 @@ export function useBuyerInquiries() {
     queryKey: ['inquiries', 'buyer'],
     queryFn: async () => {
       const res = await api.get('/inquiries/buyer');
-      return res.data as Inquiry[];
+      const items = res.data?.inquiries || res.data;
+      return (Array.isArray(items) ? items : []) as Inquiry[];
     },
   });
 }

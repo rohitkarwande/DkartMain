@@ -61,21 +61,21 @@ export function Search() {
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="flex gap-3 mb-8">
         <div className="relative flex-1">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+          <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 dark:text-slate-500" />
           <Input 
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
             placeholder="Search medical equipment by name, brand, or category..." 
-            className="pl-11 h-12 text-base border-slate-200"
+            className="pl-11 h-12 text-base border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400"
           />
         </div>
-        <Button type="submit" className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 font-semibold">
+        <Button type="submit" className="h-12 px-8 bg-emerald-600 hover:bg-emerald-700 font-bold text-white shadow-sm">
           Search
         </Button>
         <Button 
           type="button" 
           variant="outline" 
-          className="h-12 px-4 md:hidden"
+          className="h-12 px-4 md:hidden dark:border-slate-700 dark:text-white"
           onClick={() => setShowFilters(!showFilters)}
         >
           <SlidersHorizontal className="h-5 w-5" />
@@ -86,30 +86,31 @@ export function Search() {
         
         {/* Sidebar Filters */}
         <div className={`w-56 flex-shrink-0 space-y-6 ${showFilters ? 'block' : 'hidden'} md:block`}>
-          <div className="bg-white rounded-xl border p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-slate-900 flex items-center gap-2">
-                <Filter className="h-4 w-4 text-slate-400" /> Filters
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm transition-colors">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Filter className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Filters
               </h3>
               {hasFilters && (
-                <button onClick={clearAll} className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1">
+                <button onClick={clearAll} className="text-xs font-semibold text-red-500 hover:text-red-600 dark:text-red-400 flex items-center gap-1">
                   <X className="h-3 w-3" /> Clear
                 </button>
               )}
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Category</h4>
-                <div className="space-y-2">
+                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-3">Category</h4>
+                <div className="space-y-2.5">
                   {CATEGORIES.map((cat) => (
-                    <div key={cat} className="flex items-center space-x-2">
+                    <div key={cat} className="flex items-center space-x-2.5">
                       <Checkbox 
                         id={`cat-${cat}`}
                         checked={selectedCategories.includes(cat)}
                         onCheckedChange={() => toggleCategory(cat)}
+                        className="dark:border-slate-700 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
                       />
-                      <label htmlFor={`cat-${cat}`} className="text-sm text-slate-600 cursor-pointer">
+                      <label htmlFor={`cat-${cat}`} className="text-sm font-medium text-slate-600 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white cursor-pointer select-none">
                         {cat.replace("_", " ")}
                       </label>
                     </div>
@@ -117,17 +118,18 @@ export function Search() {
                 </div>
               </div>
 
-              <div className="border-t pt-4">
-                <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Condition</h4>
-                <div className="space-y-2">
+              <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
+                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-400 uppercase tracking-wider mb-3">Condition</h4>
+                <div className="space-y-2.5">
                   {CONDITIONS.map((cond) => (
-                    <div key={cond} className="flex items-center space-x-2">
+                    <div key={cond} className="flex items-center space-x-2.5">
                       <Checkbox 
                         id={`cond-${cond}`}
                         checked={selectedConditions.includes(cond)}
                         onCheckedChange={() => toggleCondition(cond)}
+                        className="dark:border-slate-700 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
                       />
-                      <label htmlFor={`cond-${cond}`} className="text-sm text-slate-600 cursor-pointer">
+                      <label htmlFor={`cond-${cond}`} className="text-sm font-medium text-slate-600 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white cursor-pointer select-none">
                         {cond}
                       </label>
                     </div>
@@ -143,14 +145,26 @@ export function Search() {
           {/* Active Filters */}
           {hasFilters && (
             <div className="flex flex-wrap gap-2 mb-4">
-              {keyword && <Badge variant="secondary" className="gap-1">{keyword} <button onClick={() => setKeyword("")}><X className="h-3 w-3" /></button></Badge>}
-              {selectedCategories.map(c => <Badge key={c} variant="secondary" className="gap-1">{c} <button onClick={() => toggleCategory(c)}><X className="h-3 w-3" /></button></Badge>)}
-              {selectedConditions.map(c => <Badge key={c} variant="secondary" className="gap-1">{c} <button onClick={() => toggleCondition(c)}><X className="h-3 w-3" /></button></Badge>)}
+              {keyword && (
+                <Badge variant="secondary" className="gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 font-semibold px-2.5 py-1">
+                  {keyword} <button onClick={() => setKeyword("")} className="hover:text-red-500"><X className="h-3 w-3" /></button>
+                </Badge>
+              )}
+              {selectedCategories.map(c => (
+                <Badge key={c} variant="secondary" className="gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 font-semibold px-2.5 py-1">
+                  {c} <button onClick={() => toggleCategory(c)} className="hover:text-red-500"><X className="h-3 w-3" /></button>
+                </Badge>
+              ))}
+              {selectedConditions.map(c => (
+                <Badge key={c} variant="secondary" className="gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 font-semibold px-2.5 py-1">
+                  {c} <button onClick={() => toggleCondition(c)} className="hover:text-red-500"><X className="h-3 w-3" /></button>
+                </Badge>
+              ))}
             </div>
           )}
 
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white">
               {isLoading ? "Searching..." : `${equipment?.length ?? 0} Results Found`}
             </h2>
           </div>
@@ -160,15 +174,15 @@ export function Search() {
               <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
             </div>
           ) : isError ? (
-            <div className="p-8 text-center text-red-500 bg-red-50 rounded-xl border border-red-100">
+            <div className="p-8 text-center text-red-500 dark:text-red-400 bg-red-50 dark:bg-red-950/40 rounded-xl border border-red-100 dark:border-red-900/50">
               Failed to search equipment. Make sure the backend is running.
             </div>
           ) : !equipment?.length ? (
-            <div className="p-16 text-center border rounded-xl bg-white border-dashed">
-              <SearchIcon className="h-12 w-12 text-slate-200 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-slate-900">No equipment found</h3>
-              <p className="text-slate-400 mt-1 mb-6">Try adjusting your search terms or removing some filters.</p>
-              <Button variant="outline" onClick={clearAll}>Clear All Filters</Button>
+            <div className="p-16 text-center border rounded-2xl bg-white dark:bg-slate-900 border-dashed border-slate-200 dark:border-slate-800">
+              <SearchIcon className="h-12 w-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">No equipment found</h3>
+              <p className="text-slate-400 dark:text-slate-500 mt-1 mb-6">Try adjusting your search terms or removing some filters.</p>
+              <Button variant="outline" onClick={clearAll} className="dark:border-slate-700 dark:text-white dark:hover:bg-slate-800">Clear All Filters</Button>
             </div>
           ) : (
             <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -178,10 +192,12 @@ export function Search() {
                   id={String(item.id)}
                   title={item.title}
                   brand={item.brand}
+                  category={item.category}
                   price={item.price}
                   location={[item.city, item.state].filter(Boolean).join(", ") || "India"}
                   condition={item.condition}
                   status={item.status}
+                  isSponsored={item.is_sponsored}
                   image={item.images?.[0]?.image_url 
                     ? `${API_BASE_URL}${item.images[0].image_url}` 
                     : "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"}

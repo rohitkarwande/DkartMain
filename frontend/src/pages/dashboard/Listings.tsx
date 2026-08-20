@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { 
   Loader2, PlusCircle, Trash2, CheckCircle2, 
-  MapPin, Calendar, Eye, Upload, Download, X, Edit
+  MapPin, Calendar, Eye, Upload, Download, X, Edit, Sparkles
 } from "lucide-react";
 import { useState } from "react";
 import { api, API_BASE_URL } from "@/lib/api";
@@ -223,6 +223,13 @@ export function Listings() {
                             <Edit className="h-3.5 w-3.5 mr-1" /> Edit
                           </Link>
                         </Button>
+                        {item.status === 'Active' && (
+                          <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white font-bold gap-1">
+                            <Link to="/dashboard/promotions">
+                              <Sparkles className="h-3.5 w-3.5" /> Promote
+                            </Link>
+                          </Button>
+                        )}
                         {item.status === 'Draft' && (
                           <Button
                             size="sm"

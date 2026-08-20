@@ -5,7 +5,7 @@ const db = require('../config/db');
 // ─────────────────────────────────────────────────────────────
 const getDashboardStats = async (req, res) => {
     try {
-        const [usersCount, sellersCount, listingsCount, inquiriesCount, pendingKycCount, totalRevenueRows, professionRows] =
+        const [usersCount, sellersCount, listingsCount, inquiriesCount, pendingKycCount, totalRevenueRows, professionRows, pendingPromosCount, openTicketsCount] =
             await Promise.all([
                 db.query("SELECT COUNT(*) FROM users WHERE role = 'user' OR role = 'buyer'"),
                 db.query("SELECT COUNT(*) FROM users WHERE role = 'seller'"),
@@ -14,6 +14,8 @@ const getDashboardStats = async (req, res) => {
                 db.query("SELECT COUNT(*) FROM kyc_documents WHERE status = 'Pending'"),
                 db.query("SELECT COUNT(*) FROM kyc_documents WHERE status = 'Approved'"),
                 db.query("SELECT profession, COUNT(*) FROM user_profiles WHERE profession IS NOT NULL GROUP BY profession"),
+                db.query("SELECT COUNT(*) FROM promotions WHERE status = 'Pending'"),
+                db.query("SELECT COUNT(*) FROM support_tickets WHERE status = 'Open' OR status = 'In Progress'"),
             ]);
         
         const professions = professionRows.rows.reduce((acc, row) => {
@@ -28,6 +30,8 @@ const getDashboardStats = async (req, res) => {
             activeInquiries: parseInt(inquiriesCount.rows[0].count, 10),
             pendingKyc: parseInt(pendingKycCount.rows[0].count, 10),
             approvedKyc: parseInt(totalRevenueRows.rows[0].count, 10),
+            pendingPromotions: parseInt(pendingPromosCount.rows[0].count, 10),
+            openTickets: parseInt(openTicketsCount.rows[0].count, 10),
             professions,
         });
     } catch (error) {

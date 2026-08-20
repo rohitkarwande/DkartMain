@@ -25,7 +25,8 @@ export function useChatRooms() {
     queryKey: ['chat', 'rooms'],
     queryFn: async () => {
       const res = await api.get('/chat/rooms');
-      return res.data as ChatRoom[];
+      const items = res.data?.rooms || res.data;
+      return (Array.isArray(items) ? items : []) as ChatRoom[];
     },
   });
 }
@@ -37,7 +38,8 @@ export function useChatMessages(roomId: number | null) {
     queryFn: async () => {
       if (!roomId) return [];
       const res = await api.get(`/chat/rooms/${roomId}/messages`);
-      return res.data as ChatMessage[];
+      const items = res.data?.messages || res.data;
+      return (Array.isArray(items) ? items : []) as ChatMessage[];
     },
     enabled: !!roomId,
   });

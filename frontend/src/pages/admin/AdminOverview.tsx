@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Download,
   ShieldAlert,
+  LifeBuoy,
 } from "lucide-react";
 
 function StatCard({
@@ -83,22 +84,38 @@ export function AdminOverview() {
   return (
     <div className="p-4 md:p-8 space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Platform Overview</h1>
-          <p className="text-slate-400 mt-1 text-sm">Real-time marketplace stats and pending actions</p>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          {stats?.pendingKyc != null && stats.pendingKyc > 0 && (
+            <Link
+              to="/admin/kyc"
+              className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-amber-500/20 transition-colors w-fit"
+            >
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{stats.pendingKyc} KYC application{stats.pendingKyc > 1 ? "s" : ""} pending review</span>
+              <ArrowRight className="h-4 w-4 shrink-0" />
+            </Link>
+          )}
+          {stats?.pendingPromotions != null && stats.pendingPromotions > 0 && (
+            <Link
+              to="/admin/promotions"
+              className="flex items-center gap-2 bg-violet-500/10 border border-violet-500/30 text-violet-400 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-violet-500/20 transition-colors w-fit"
+            >
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{stats.pendingPromotions} Promotion request{stats.pendingPromotions > 1 ? "s" : ""} pending approval</span>
+              <ArrowRight className="h-4 w-4 shrink-0" />
+            </Link>
+          )}
+          {stats?.openTickets != null && stats.openTickets > 0 && (
+            <Link
+              to="/admin/tickets"
+              className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-500/20 transition-colors w-fit"
+            >
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{stats.openTickets} Support ticket{stats.openTickets > 1 ? "s" : ""} pending resolution</span>
+              <ArrowRight className="h-4 w-4 shrink-0" />
+            </Link>
+          )}
         </div>
-        {stats?.pendingKyc != null && stats.pendingKyc > 0 && (
-          <Link
-            to="/admin/kyc"
-            className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-amber-500/20 transition-colors w-fit"
-          >
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span>{stats.pendingKyc} KYC application{stats.pendingKyc > 1 ? "s" : ""} pending review</span>
-            <ArrowRight className="h-4 w-4 shrink-0" />
-          </Link>
-        )}
-      </div>
 
       {/* Stats Grid */}
       {isLoading ? (
@@ -152,6 +169,22 @@ export function AdminOverview() {
             color="bg-teal-500"
             sub="Verified seller applications"
           />
+          <StatCard
+            label="Pending Promotions"
+            value={stats?.pendingPromotions ?? 0}
+            icon={Clock}
+            color="bg-indigo-500"
+            sub="Awaiting admin review"
+            href="/admin/promotions"
+          />
+          <StatCard
+            label="Open Tickets"
+            value={stats?.openTickets ?? 0}
+            icon={LifeBuoy}
+            color="bg-sky-500"
+            sub="Awaiting admin action"
+            href="/admin/tickets"
+          />
         </div>
       )}
 
@@ -189,7 +222,7 @@ export function AdminOverview() {
       {/* Quick Actions */}
       <div>
         <h2 className="text-lg font-bold text-white mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <Link
             to="/admin/kyc?status=Pending"
             className="group bg-slate-800/60 border border-slate-700/50 hover:border-amber-500/40 rounded-2xl p-6 transition-all hover:bg-slate-800"
@@ -204,6 +237,25 @@ export function AdminOverview() {
                 </p>
                 <p className="text-sm text-slate-400 mt-0.5">
                   Approve or reject pending seller applications
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            to="/admin/promotions?status=Pending"
+            className="group bg-slate-800/60 border border-slate-700/50 hover:border-violet-500/40 rounded-2xl p-6 transition-all hover:bg-slate-800"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-violet-500/10 rounded-xl flex items-center justify-center group-hover:bg-violet-500/20 transition-colors">
+                <Clock className="h-6 w-6 text-violet-400" />
+              </div>
+              <div>
+                <p className="font-bold text-white group-hover:text-violet-300 transition-colors">
+                  Review Promotions
+                </p>
+                <p className="text-sm text-slate-400 mt-0.5">
+                  Approve or reject pending sponsored/carousel listings
                 </p>
               </div>
             </div>
@@ -242,6 +294,25 @@ export function AdminOverview() {
                 </p>
                 <p className="text-sm text-slate-400 mt-0.5">
                   Monitor logins and manage IP blocklist
+                </p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            to="/admin/tickets?status=Open"
+            className="group bg-slate-800/60 border border-slate-700/50 hover:border-violet-500/40 rounded-2xl p-6 transition-all hover:bg-slate-800"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-sky-500/10 rounded-xl flex items-center justify-center group-hover:bg-sky-500/20 transition-colors">
+                <LifeBuoy className="h-6 w-6 text-sky-400" />
+              </div>
+              <div>
+                <p className="font-bold text-white group-hover:text-sky-300 transition-colors">
+                  Review Tickets
+                </p>
+                <p className="text-sm text-slate-400 mt-0.5">
+                  View and resolve active user support tickets
                 </p>
               </div>
             </div>

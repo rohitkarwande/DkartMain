@@ -3,7 +3,7 @@ import { TopNavbar } from "./TopNavbar";
 
 export function MainLayout() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors">
       <TopNavbar />
       <main className="flex-1 w-full">
         <Outlet />

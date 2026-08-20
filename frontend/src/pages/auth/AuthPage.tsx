@@ -25,6 +25,9 @@ export function AuthPage() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
+  const [customGoogleEmail, setCustomGoogleEmail] = useState("");
+  const [customGoogleName, setCustomGoogleName] = useState("");
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -46,6 +49,56 @@ export function AuthPage() {
         .catch(err => console.error("Auto-detect location failed:", err));
     }
   }, [step]);
+
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+  const handleGoogleLogin = async (payload: { credential?: string; email?: string; name?: string; isMock?: boolean }) => {
+    setLoading(true);
+    setError("");
+    setShowGoogleModal(false);
+    try {
+      const res = await api.post("/auth/google", payload);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      if (!res.data.user.profession || !res.data.user.location) {
+        setStep("onboarding");
+      } else {
+        navigate("/");
+        window.location.href = "/";
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Google Sign-In failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (googleClientId && (window as any).google && step === "input") {
+      try {
+        (window as any).google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: (response: any) => {
+            handleGoogleLogin({ credential: response.credential });
+          },
+        });
+
+        const btnElement = document.getElementById("google-signin-btn");
+        if (btnElement) {
+          (window as any).google.accounts.id.renderButton(btnElement, {
+            theme: "outline",
+            size: "large",
+            width: btnElement.clientWidth || 380,
+            text: "continue_with",
+            shape: "rectangular",
+          });
+        }
+      } catch (e) {
+        console.error("Google SSO init error:", e);
+      }
+    }
+  }, [googleClientId, step]);
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -281,6 +334,36 @@ export function AuthPage() {
                   )}
                 </Button>
               </form>
+
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-slate-200" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-slate-500">Or continue with</span>
+                </div>
+              </div>
+
+              {googleClientId ? (
+                <div className="w-full flex justify-center">
+                  <div id="google-signin-btn" className="w-full max-w-[380px] min-h-[50px]"></div>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowGoogleModal(true)}
+                  className="w-full h-14 text-base font-semibold border-slate-200 text-slate-700 hover:bg-slate-50 flex items-center justify-center gap-3 rounded-xl shadow-sm"
+                >
+                  <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.85z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                  Continue with Google
+                </Button>
+              )}
             </div>
           ) : step === "otp" ? (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
@@ -417,6 +500,106 @@ export function AuthPage() {
           </div>
         </div>
       </div>
+
+      {/* simulated google identity picker modal overlay */}
+      {showGoogleModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200">
+            {/* Header */}
+            <div className="p-6 border-b border-slate-100 flex flex-col items-center text-center">
+              <svg className="h-10 w-10 mb-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.85z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+              <h3 className="text-xl font-bold text-slate-800">Sign in with Google</h3>
+              <p className="text-xs text-slate-500 mt-1">to continue to DKart Marketplace</p>
+            </div>
+
+            {/* List of profiles */}
+            <div className="p-4 space-y-2 max-h-64 overflow-y-auto">
+              <button
+                onClick={() => handleGoogleLogin({ email: "rohitkarwande82@gmail.com", name: "Dr. Rohit Karwande", isMock: true })}
+                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all text-left group"
+              >
+                <div className="h-10 w-10 rounded-full bg-violet-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0">
+                  RK
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-slate-800 group-hover:text-violet-600 transition-colors">Dr. Rohit Karwande</div>
+                  <div className="text-xs text-slate-500 truncate">rohitkarwande82@gmail.com</div>
+                </div>
+                <span className="text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-md shrink-0">Admin</span>
+              </button>
+
+              <button
+                onClick={() => handleGoogleLogin({ email: "infodrskart@gmail.com", name: "DKart Info", isMock: true })}
+                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all text-left group"
+              >
+                <div className="h-10 w-10 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0">
+                  DK
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">DKart Info</div>
+                  <div className="text-xs text-slate-500 truncate">infodrskart@gmail.com</div>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md shrink-0">Admin</span>
+              </button>
+
+              <button
+                onClick={() => handleGoogleLogin({ email: "divya.karwande@gmail.com", name: "Dr. Divya Karwande", isMock: true })}
+                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all text-left group"
+              >
+                <div className="h-10 w-10 rounded-full bg-blue-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0">
+                  DK
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Dr. Divya Karwande</div>
+                  <div className="text-xs text-slate-500 truncate">divya.karwande@gmail.com</div>
+                </div>
+                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md shrink-0">Seller</span>
+              </button>
+            </div>
+
+            {/* Custom Account Input Option */}
+            <div className="p-5 bg-slate-50 border-t border-slate-100 space-y-3">
+              <div className="text-xs font-bold text-slate-600 uppercase tracking-wide">Or enter custom account</div>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="Your Full Name"
+                  value={customGoogleName}
+                  onChange={(e) => setCustomGoogleName(e.target.value)}
+                  className="w-full text-sm bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
+                />
+                <input
+                  type="email"
+                  placeholder="name@gmail.com"
+                  value={customGoogleEmail}
+                  onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                  className="w-full text-sm bg-white border border-slate-200 rounded-xl px-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
+                />
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={() => setShowGoogleModal(false)}
+                    className="flex-1 text-xs font-semibold text-slate-500 hover:text-slate-800 bg-slate-200/50 hover:bg-slate-200 rounded-xl py-2.5 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleGoogleLogin({ email: customGoogleEmail, name: customGoogleName || customGoogleEmail.split("@")[0], isMock: true })}
+                    disabled={!customGoogleEmail.includes("@")}
+                    className="flex-1 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:pointer-events-none rounded-xl py-2.5 shadow-sm transition-colors"
+                  >
+                    Sign In
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

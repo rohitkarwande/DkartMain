@@ -55,10 +55,12 @@ const createEquipment = async (req, res) => {
             }
             
             const imagePromises = req.files.map((file, index) => {
-                const imageUrl = `/uploads/${file.filename}`;
+                const isVideo = file.mimetype.startsWith('video/');
+                const imageUrl = isVideo ? `/uploads/videos/${file.filename}` : `/uploads/${file.filename}`;
+                const mediaType = isVideo ? 'video' : 'image';
                 return db.query(
-                    `INSERT INTO equipment_images (equipment_post_id, image_url, display_order) VALUES ($1, $2, $3) RETURNING *`,
-                    [post.id, imageUrl, index]
+                    `INSERT INTO equipment_images (equipment_post_id, image_url, display_order, media_type) VALUES ($1, $2, $3, $4) RETURNING *`,
+                    [post.id, imageUrl, index, mediaType]
                 );
             });
             const imgResults = await Promise.all(imagePromises);
@@ -142,10 +144,12 @@ const updateEquipment = async (req, res) => {
             }
 
             const imagePromises = req.files.map((file, index) => {
-                const imageUrl = `/uploads/${file.filename}`;
+                const isVideo = file.mimetype.startsWith('video/');
+                const imageUrl = isVideo ? `/uploads/videos/${file.filename}` : `/uploads/${file.filename}`;
+                const mediaType = isVideo ? 'video' : 'image';
                 return db.query(
-                    `INSERT INTO equipment_images (equipment_post_id, image_url, display_order) VALUES ($1, $2, $3) RETURNING *`,
-                    [id, imageUrl, currentCount + index]
+                    `INSERT INTO equipment_images (equipment_post_id, image_url, display_order, media_type) VALUES ($1, $2, $3, $4) RETURNING *`,
+                    [id, imageUrl, currentCount + index, mediaType]
                 );
             });
             const imgResults = await Promise.all(imagePromises);
@@ -231,9 +235,14 @@ const listEquipment = async (req, res) => {
         const { category, condition, city, brand, minPrice, maxPrice, search, sort, page = 1, limit = 10 } = req.query;
 
         let queryStr = `SELECT ep.*, u.email as seller_email, 
-            (SELECT json_agg(json_build_object('id', ei.id, 'image_url', ei.image_url)) FROM equipment_images ei WHERE ei.equipment_post_id = ep.id) as images
+            (SELECT json_agg(json_build_object('id', ei.id, 'image_url', ei.image_url, 'media_type', ei.media_type)) FROM equipment_images ei WHERE ei.equipment_post_id = ep.id) as images,
+            CASE WHEN promo.id IS NOT NULL THEN true ELSE false END as is_sponsored
             FROM equipment_posts ep
             JOIN users u ON ep.seller_id = u.id
+            LEFT JOIN promotions promo ON promo.equipment_post_id = ep.id
+                AND promo.type = 'sponsored'
+                AND promo.status = 'Active'
+                AND promo.expires_at > NOW()
             WHERE ep.status IN ('Active', 'Sold')`;
         const queryParams = [];
         let paramIndex = 1;
@@ -290,19 +299,20 @@ const listEquipment = async (req, res) => {
             paramIndex++;
         }
 
-        // Sorting
+        // Sorting — sponsored listings always float to the top regardless of sort
+        const sponsoredSort = `CASE WHEN promo.id IS NOT NULL THEN 0 ELSE 1 END ASC`;
         if (sort === 'oldest') {
-            queryStr += ` ORDER BY ep.created_at ASC`;
+            queryStr += ` ORDER BY ${sponsoredSort}, ep.created_at ASC`;
         } else if (sort === 'price low to high') {
-            queryStr += ` ORDER BY ep.price ASC NULLS LAST`;
+            queryStr += ` ORDER BY ${sponsoredSort}, ep.price ASC NULLS LAST`;
         } else if (sort === 'price high to low') {
-            queryStr += ` ORDER BY ep.price DESC NULLS LAST`;
+            queryStr += ` ORDER BY ${sponsoredSort}, ep.price DESC NULLS LAST`;
         } else {
             // Default sort: if searching, sort by relevance. Otherwise, sort by latest.
             if (isSearchActive) {
-                queryStr += ` ORDER BY ts_rank(ep.search_vector, to_tsquery('english', $${paramIndex - 1})) DESC, ep.created_at DESC`;
+                queryStr += ` ORDER BY ${sponsoredSort}, ts_rank(ep.search_vector, to_tsquery('english', $${paramIndex - 1})) DESC, ep.created_at DESC`;
             } else {
-                queryStr += ` ORDER BY ep.created_at DESC`;
+                queryStr += ` ORDER BY ${sponsoredSort}, ep.created_at DESC`;
             }
         }
 
@@ -355,7 +365,7 @@ const getMyEquipment = async (req, res) => {
         const { page = 1, limit = 10, sort = 'latest' } = req.query;
 
         let queryStr = `SELECT ep.*, 
-            (SELECT json_agg(json_build_object('id', ei.id, 'image_url', ei.image_url)) FROM equipment_images ei WHERE ei.equipment_post_id = ep.id) as images
+            (SELECT json_agg(json_build_object('id', ei.id, 'image_url', ei.image_url, 'media_type', ei.media_type)) FROM equipment_images ei WHERE ei.equipment_post_id = ep.id) as images
             FROM equipment_posts ep WHERE ep.seller_id = $1`;
         
         if (sort === 'oldest') queryStr += ` ORDER BY ep.created_at ASC`;

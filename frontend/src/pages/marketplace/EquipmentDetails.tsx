@@ -24,6 +24,7 @@ export function EquipmentDetails() {
   const [inquiryMsg, setInquiryMsg] = useState("I am interested in this equipment. Please share pricing and availability details.");
   const [isSent, setIsSent] = useState(false);
   const [inquiryError, setInquiryError] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
 
   // Auto scroll to top when equipment changes
   useEffect(() => {
@@ -73,20 +74,23 @@ export function EquipmentDetails() {
     }
   };
 
-  const formattedPrice = equipment.price
+  const formattedPrice = equipment?.price
     ? new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(equipment.price)
     : "Price on Request";
 
-  const imageUrls = (equipment.images || []).map((img: any) => 
-    typeof img === 'string' ? img : `${API_BASE_URL}${img.image_url}`
-  );
+  const allMedia = (equipment?.images || []).map((img: any) => ({
+    url: typeof img === 'string' ? img : `${API_BASE_URL}${img.image_url}`,
+    isVideo: img?.media_type === 'video',
+  }));
+
+  const active = allMedia[activeIndex];
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
       {/* Back breadcrumb */}
       <div className="mb-6">
-        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700">
+        <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white font-medium transition-colors">
           <ArrowLeft className="h-4 w-4" />
           Back to Listings
         </button>
@@ -96,39 +100,41 @@ export function EquipmentDetails() {
         
         {/* Right: Price + CTA — shows FIRST on mobile via order */}
         <div className="space-y-6 lg:order-last">
-          <div className="bg-white p-5 md:p-6 rounded-2xl border shadow-sm lg:sticky lg:top-20">
+          <div className="bg-white dark:bg-slate-900 p-5 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm lg:sticky lg:top-20 transition-colors">
             {/* Status badge */}
             <div className="flex items-center justify-between mb-4">
-              <Badge variant="outline" className="capitalize text-xs">{equipment.category}</Badge>
+              <Badge variant="outline" className="capitalize text-xs font-bold border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1">
+                {equipment.category}
+              </Badge>
               <Badge 
                 variant="outline" 
-                className={`text-xs ${equipment.status === 'Active' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-slate-100 text-slate-600'}`}
+                className={`text-xs font-semibold ${equipment.status === 'Active' ? 'bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/50' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}`}
               >
                 {equipment.status}
               </Badge>
             </div>
 
-            <h1 className="text-xl font-bold text-slate-900 mb-1">{equipment.title}</h1>
-            <p className="text-slate-500 text-sm mb-4">{equipment.brand} · {equipment.model}</p>
+            <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 dark:text-white mb-1.5 leading-tight">{equipment.title}</h1>
+            <p className="text-slate-500 dark:text-slate-300 text-sm font-medium mb-4">{equipment.brand} · {equipment.model}</p>
 
-            <div className="text-3xl font-bold text-slate-900 mb-5">{formattedPrice}</div>
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white mb-5">{formattedPrice}</div>
 
-            <div className="space-y-3 mb-6 pb-6 border-b">
-              <div className="flex items-center text-sm text-slate-600">
-                <MapPin className="h-4 w-4 mr-2 text-slate-400" />
+            <div className="space-y-3 mb-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center text-sm font-medium text-slate-600 dark:text-slate-200">
+                <MapPin className="h-4 w-4 mr-2 text-slate-400 dark:text-emerald-400 shrink-0" />
                 {[equipment.city, equipment.state].filter(Boolean).join(", ") || "Location not specified"}
               </div>
-              <div className="flex items-center text-sm text-slate-600">
-                <Tag className="h-4 w-4 mr-2 text-slate-400" />
-                Condition: <span className="font-medium ml-1">{equipment.condition}</span>
+              <div className="flex items-center text-sm font-medium text-slate-600 dark:text-slate-200">
+                <Tag className="h-4 w-4 mr-2 text-slate-400 dark:text-emerald-400 shrink-0" />
+                Condition: <span className="font-bold ml-1 text-slate-900 dark:text-white">{equipment.condition}</span>
               </div>
               {equipment.manufacturing_year && (
-                <div className="flex items-center text-sm text-slate-600">
-                  <Calendar className="h-4 w-4 mr-2 text-slate-400" />
-                  Manufactured: {equipment.manufacturing_year}
+                <div className="flex items-center text-sm font-medium text-slate-600 dark:text-slate-200">
+                  <Calendar className="h-4 w-4 mr-2 text-slate-400 dark:text-emerald-400 shrink-0" />
+                  Manufactured: <span className="ml-1 text-slate-900 dark:text-white">{equipment.manufacturing_year}</span>
                 </div>
               )}
-              <div className="flex items-center text-sm text-emerald-600 font-medium">
+              <div className="flex items-center text-sm text-emerald-600 dark:text-emerald-400 font-bold">
                 <ShieldCheck className="h-4 w-4 mr-2" />
                 Verified Seller
               </div>
@@ -136,17 +142,17 @@ export function EquipmentDetails() {
 
             {/* Inquiry CTA */}
             {equipment.status === 'Sold' ? (
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center">
+              <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center">
                 <CheckCircle2 className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-                <p className="font-bold text-slate-700 text-lg">Equipment Sold</p>
-                <p className="text-sm text-slate-500 mt-1">This item has been sold to another user and is no longer available.</p>
+                <p className="font-bold text-slate-700 dark:text-slate-200 text-lg">Equipment Sold</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">This item has been sold to another user and is no longer available.</p>
               </div>
             ) : isSent ? (
-              <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-                <CheckCircle2 className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <p className="font-semibold text-green-700">Inquiry Sent!</p>
-                <p className="text-sm text-green-600 mt-1">The seller will contact you soon. Check your inquiries dashboard.</p>
-                <Button asChild variant="link" size="sm" className="mt-2 text-green-700">
+              <div className="bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900/50 rounded-xl p-4 text-center">
+                <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
+                <p className="font-semibold text-green-700 dark:text-green-300">Inquiry Sent!</p>
+                <p className="text-sm text-green-600 dark:text-green-400 mt-1">The seller will contact you soon. Check your inquiries dashboard.</p>
+                <Button asChild variant="link" size="sm" className="mt-2 text-green-700 dark:text-green-400 font-semibold">
                   <Link to="/dashboard/inquiries">View My Inquiries →</Link>
                 </Button>
               </div>
@@ -156,14 +162,14 @@ export function EquipmentDetails() {
                   value={inquiryMsg}
                   onChange={(e) => setInquiryMsg(e.target.value)}
                   placeholder="Write your message to the seller..."
-                  className="resize-none text-sm"
+                  className="resize-none text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus-visible:ring-emerald-500"
                   rows={3}
                 />
                 {inquiryError && (
-                  <p className="text-xs text-red-600">{inquiryError}</p>
+                  <p className="text-xs text-red-600 dark:text-red-400">{inquiryError}</p>
                 )}
                 <Button
-                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 font-semibold"
+                  className="w-full h-11 bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
                   onClick={handleContactSeller}
                   disabled={createInquiry.isPending}
                 >
@@ -174,8 +180,8 @@ export function EquipmentDetails() {
                   )}
                 </Button>
                 {!user && (
-                  <p className="text-xs text-center text-slate-500">
-                    <Link to="/login" className="text-emerald-600 font-medium hover:underline">Login</Link> required to contact seller
+                  <p className="text-xs text-center text-slate-500 dark:text-slate-400">
+                    <Link to="/login" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">Login</Link> required to contact seller
                   </p>
                 )}
               </div>
@@ -186,36 +192,59 @@ export function EquipmentDetails() {
         {/* Left: Images + Details */}
         <div className="lg:col-span-2 space-y-6 lg:order-first">
           
-          {/* Image Gallery */}
-          <div className="bg-white rounded-2xl overflow-hidden border shadow-sm">
-            <div className="aspect-video bg-slate-100 flex items-center justify-center">
-              {imageUrls.length > 0 ? (
-                <img 
-                  src={imageUrls[0]} 
-                  alt={equipment.title} 
-                  className="w-full h-full object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"; }}
-                />
+          {/* Media Gallery */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+            <div className="aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+              {allMedia.length > 0 ? (
+                active.isVideo ? (
+                  <video
+                    key={active.url}
+                    src={active.url}
+                    controls
+                    className="w-full h-full object-contain bg-black"
+                  />
+                ) : (
+                  <img 
+                    src={active.url} 
+                    alt={equipment.title} 
+                    className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"; }}
+                  />
+                )
               ) : (
-                <div className="text-center text-slate-400">
-                  <p className="text-lg font-medium">No Images Available</p>
+                <div className="text-center text-slate-400 dark:text-slate-500">
+                  <p className="text-lg font-medium">No Media Available</p>
                 </div>
               )}
             </div>
-            {imageUrls.length > 1 && (
-              <div className="flex gap-2 p-3 overflow-x-auto bg-slate-50 border-t">
-                {imageUrls.slice(1).map((url: string, i: number) => (
-                  <img key={i} src={url} alt="" className="h-16 w-16 rounded-lg object-cover border shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                  />
+            {allMedia.length > 1 && (
+              <div className="flex gap-2 p-3 overflow-x-auto bg-slate-50 dark:bg-slate-800/60 border-t border-slate-200 dark:border-slate-800">
+                {allMedia.map((media, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveIndex(i)}
+                    className={`relative h-16 w-16 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${
+                      i === activeIndex ? 'border-emerald-500' : 'border-slate-200 dark:border-slate-700 hover:opacity-80'
+                    }`}
+                  >
+                    {media.isVideo ? (
+                      <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                        <span className="text-[9px] font-bold text-white">VIDEO</span>
+                      </div>
+                    ) : (
+                      <img src={media.url} alt="" className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )}
+                  </button>
                 ))}
               </div>
             )}
           </div>
 
           {/* Specs */}
-          <div className="bg-white p-6 rounded-2xl border shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900 mb-4 pb-3 border-b">Equipment Specifications</h2>
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 pb-3 border-b border-slate-200 dark:border-slate-800">Equipment Specifications</h2>
             <div className="grid grid-cols-2 gap-4 text-sm">
               {[
                 ["Category", equipment.category],
@@ -226,8 +255,8 @@ export function EquipmentDetails() {
                 ["Status", equipment.status],
               ].map(([label, value]) => (
                 <div key={label}>
-                  <span className="text-slate-500 block mb-0.5">{label}</span>
-                  <span className="font-semibold text-slate-900">{value || "—"}</span>
+                  <span className="text-slate-500 dark:text-slate-400 block mb-0.5">{label}</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{value || "—"}</span>
                 </div>
               ))}
             </div>
@@ -235,9 +264,9 @@ export function EquipmentDetails() {
 
           {/* Description */}
           {equipment.description && (
-            <div className="bg-white p-6 rounded-2xl border shadow-sm">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">Description</h2>
-              <p className="text-slate-600 leading-relaxed whitespace-pre-wrap text-sm">{equipment.description}</p>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Description</h2>
+              <p className="text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap text-sm">{equipment.description}</p>
             </div>
           )}
         </div>
@@ -246,7 +275,7 @@ export function EquipmentDetails() {
       {/* Similar Listings */}
       {similar && similar.length > 0 && (
         <section className="mt-12">
-          <h2 className="text-xl font-bold text-slate-900 mb-5">Similar Equipment</h2>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-5">Similar Equipment</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {similar.slice(0, 5).map((item) => (
               <EquipmentCard
@@ -254,10 +283,12 @@ export function EquipmentDetails() {
                 id={String(item.id)}
                 title={item.title}
                 brand={item.brand}
+                category={(item as any).category}
                 price={item.price}
                 location={[item.city, item.state].filter(Boolean).join(", ") || "India"}
                 condition={item.condition}
                 status={item.status}
+                isSponsored={(item as any).is_sponsored}
                 image={(item.images?.[0] as any)?.image_url 
                   ? `${API_BASE_URL}${(item.images[0] as any).image_url}` 
                   : "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&q=80&w=800"}

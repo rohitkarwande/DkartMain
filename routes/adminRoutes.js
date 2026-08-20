@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const bannerController = require('../controllers/bannerController');
+const featureFlagController = require('../controllers/featureFlagController');
+const upload = require('../middlewares/upload');
 const authMiddleware = require('../middlewares/auth');
 const { isAdmin } = require('../middlewares/role');
 const auditLog = require('../middlewares/auditLog');
@@ -48,6 +51,17 @@ router.get('/login-history', adminController.getLoginHistory);
 router.get('/ip-blacklist', adminController.getIpBlacklist);
 router.post('/ip-blacklist', auditLog('BLACKLIST_IP', 'security'), adminController.addIpToBlacklist);
 router.delete('/ip-blacklist/:ip', auditLog('UNBLACKLIST_IP', 'security'), adminController.removeIpFromBlacklist);
+
+// 9. Hero Carousel & Banner Management
+router.get('/banners', bannerController.getAllBanners);
+router.post('/banners', upload.single('image'), auditLog('CREATE_BANNER', 'hero_banner'), bannerController.createBanner);
+router.put('/banners/:id', upload.single('image'), auditLog('UPDATE_BANNER', 'hero_banner'), bannerController.updateBanner);
+router.delete('/banners/:id', auditLog('DELETE_BANNER', 'hero_banner'), bannerController.deleteBanner);
+router.post('/banners/reorder', auditLog('REORDER_BANNERS', 'hero_banner'), bannerController.reorderBanners);
+
+// 10. Feature Flags Management
+router.get('/feature-flags', featureFlagController.getFeatureFlags);
+router.patch('/feature-flags/:key', auditLog('UPDATE_FEATURE_FLAG', 'feature_flag'), featureFlagController.updateFeatureFlag);
 
 module.exports = router;
 

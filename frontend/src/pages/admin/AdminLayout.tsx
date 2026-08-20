@@ -10,12 +10,18 @@ import {
   ChevronRight,
   Users,
   ShieldAlert,
+  Sliders,
+  Sparkles,
+  LifeBuoy,
 } from "lucide-react";
 import { useAdminStats } from "@/hooks/useAdminKyc";
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard, exact: true },
+  { label: "Hero Carousel", href: "/admin/banners", icon: Sliders },
+  { label: "Promotions", href: "/admin/promotions", icon: Sparkles, badge: "pendingPromotions" },
   { label: "KYC Applications", href: "/admin/kyc", icon: ShieldCheck, badge: "pendingKyc" },
+  { label: "Support Tickets", href: "/admin/tickets", icon: LifeBuoy, badge: "openTickets" },
   { label: "Deal Funnel", href: "/admin/deals", icon: TrendingUp },
   { label: "Manage Users", href: "/admin/users", icon: Users },
   { label: "Security & IPs", href: "/admin/security", icon: ShieldAlert },

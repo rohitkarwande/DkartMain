@@ -31,6 +31,8 @@ export interface AdminDashboardStats {
   activeInquiries: number;
   pendingKyc: number;
   approvedKyc: number;
+  pendingPromotions: number;
+  openTickets: number;
   professions?: Record<string, number>;
 }
 

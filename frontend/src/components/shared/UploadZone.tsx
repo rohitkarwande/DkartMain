@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { UploadCloud, X } from "lucide-react";
+import { UploadCloud, X, Video } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface UploadZoneProps {
@@ -7,9 +7,15 @@ interface UploadZoneProps {
   maxFiles?: number;
 }
 
-export function UploadZone({ onUpload, maxFiles = 5 }: UploadZoneProps) {
+type PreviewItem = {
+  url: string;
+  name: string;
+  isVideo: boolean;
+};
+
+export function UploadZone({ onUpload, maxFiles = 10 }: UploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
-  const [previews, setPreviews] = useState<{ url: string; name: string }[]>([]);
+  const [previews, setPreviews] = useState<PreviewItem[]>([]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -39,17 +45,17 @@ export function UploadZone({ onUpload, maxFiles = 5 }: UploadZoneProps) {
   };
 
   const handleFiles = (files: File[]) => {
-    const newPreviews = files.map((file) => ({
+    const newPreviews: PreviewItem[] = files.map((file) => ({
       url: URL.createObjectURL(file),
       name: file.name,
+      isVideo: file.type.startsWith("video/"),
     }));
     setPreviews((prev) => [...prev, ...newPreviews].slice(0, maxFiles));
     onUpload(files);
   };
 
-  const removeImage = (index: number) => {
+  const removeFile = (index: number) => {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
-    // Ideally we'd also call onUpload with the updated file list here
   };
 
   return (
@@ -69,7 +75,7 @@ export function UploadZone({ onUpload, maxFiles = 5 }: UploadZoneProps) {
         <input
           type="file"
           multiple
-          accept="image/*"
+          accept="image/*,video/mp4,video/mov,video/avi,video/webm,video/mkv"
           className="hidden"
           id="file-upload"
           onChange={handleFileInput}
@@ -80,7 +86,7 @@ export function UploadZone({ onUpload, maxFiles = 5 }: UploadZoneProps) {
             Click to upload or drag and drop
           </h3>
           <p className="text-sm text-slate-500">
-            SVG, PNG, JPG or GIF (max. 800x400px)
+            Images (JPG, PNG, WEBP) or Videos (MP4, MOV, WEBM) — max 50MB each
           </p>
         </label>
       </div>
@@ -88,18 +94,37 @@ export function UploadZone({ onUpload, maxFiles = 5 }: UploadZoneProps) {
       {previews.length > 0 && (
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
           {previews.map((preview, index) => (
-            <div key={index} className="relative group rounded-lg overflow-hidden border">
-              <img
-                src={preview.url}
-                alt={preview.name}
-                className="w-full h-24 object-cover"
-              />
+            <div key={index} className="relative group rounded-lg overflow-hidden border bg-slate-100">
+              {preview.isVideo ? (
+                <div className="relative">
+                  <video
+                    src={preview.url}
+                    className="w-full h-24 object-cover"
+                    muted
+                    playsInline
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <Video className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={preview.url}
+                  alt={preview.name}
+                  className="w-full h-24 object-cover"
+                />
+              )}
               <button
-                onClick={() => removeImage(index)}
+                onClick={() => removeFile(index)}
                 className="absolute top-1 right-1 bg-white/80 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
               >
                 <X className="h-4 w-4 text-slate-700" />
               </button>
+              {preview.isVideo && (
+                <span className="absolute bottom-1 left-1 text-[10px] font-bold text-white bg-slate-800/70 rounded px-1">
+                  VIDEO
+                </span>
+              )}
             </div>
           ))}
         </div>

@@ -20,6 +20,10 @@ const vendorRoutes = require('./routes/vendorRoutes');
 const serviceRequestRoutes = require('./routes/serviceRequestRoutes');
 const legalRoutes = require('./routes/legalRoutes');
 const healthRoutes = require('./routes/healthRoutes');
+const bannerRoutes = require('./routes/bannerRoutes');
+const featureFlagRoutes = require('./routes/featureFlagRoutes');
+const promotionRoutes = require('./routes/promotionRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
@@ -70,6 +74,10 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/vendor', vendorRoutes);
 app.use('/api/service-requests', serviceRequestRoutes);
 app.use('/api/legal', legalRoutes);
+app.use('/api/banners', bannerRoutes);
+app.use('/api/feature-flags', featureFlagRoutes);
+app.use('/api/promotions', promotionRoutes);
+app.use('/api/tickets', ticketRoutes);
 app.use('/health', healthRoutes);
 
 // React router catch-all route

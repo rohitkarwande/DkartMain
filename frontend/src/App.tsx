@@ -7,6 +7,8 @@ import { Listings } from "./pages/dashboard/Listings";
 import { Inquiries } from "./pages/dashboard/Inquiries";
 import { Chat } from "./pages/dashboard/Chat";
 import { Profile } from "./pages/dashboard/Profile";
+import { Promotions } from "./pages/dashboard/Promotions";
+import { SupportTickets } from "./pages/dashboard/SupportTickets";
 import { Home } from "./pages/marketplace/Home";
 import { Search } from "./pages/marketplace/Search";
 import { EquipmentDetails } from "./pages/marketplace/EquipmentDetails";
@@ -21,8 +23,12 @@ import { KycApplications } from "./pages/admin/KycApplications";
 import { DealFunnel } from "./pages/admin/DealFunnel";
 import { AdminUsers } from "./pages/admin/AdminUsers";
 import { AdminSecurity } from "./pages/admin/AdminSecurity";
+import { HeroBanners } from "./pages/admin/HeroBanners";
+import { AdminPromotions } from "./pages/admin/AdminPromotions";
+import { AdminTickets } from "./pages/admin/AdminTickets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRoleSync } from "./hooks/useAuth";
+import { ThemeProvider } from "./context/ThemeContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,19 +58,23 @@ function RoleSyncMount() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <RoleSyncMount />
-        <ToastListener />
-        <Routes>
+    <ThemeProvider defaultTheme="light" storageKey="dkart-theme">
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <RoleSyncMount />
+          <ToastListener />
+          <Routes>
           {/* ── ADMIN ROUTES (separate from main layout) ── */}
           <Route element={<AdminProtectedRoute />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminOverview />} />
+              <Route path="banners" element={<HeroBanners />} />
+              <Route path="promotions" element={<AdminPromotions />} />
               <Route path="kyc" element={<KycApplications />} />
               <Route path="deals" element={<DealFunnel />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="security" element={<AdminSecurity />} />
+              <Route path="tickets" element={<AdminTickets />} />
             </Route>
           </Route>
 
@@ -87,6 +97,8 @@ function App() {
               <Route path="inquiries" element={<Inquiries />} />
               <Route path="profile" element={<Profile />} />
               <Route path="chat" element={<Chat />} />
+              <Route path="promotions" element={<Promotions />} />
+              <Route path="tickets" element={<SupportTickets />} />
             </Route>
 
             {/* ── SELLER-ONLY ROUTE (gated by KYC/role) ── */}
@@ -101,6 +113,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
+  </ThemeProvider>
   );
 }
 

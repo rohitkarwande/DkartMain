@@ -323,8 +323,8 @@ export function SellEquipment() {
           {currentStep === 2 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500 relative z-10">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900">Upload Photos</h2>
-                <p className="text-slate-500 mt-1">Upload clear, well-lit photos. Listings with photos get 3x more views.</p>
+                <h2 className="text-2xl font-bold text-slate-900">Upload Photos & Videos</h2>
+                <p className="text-slate-500 mt-1">Upload clear photos and demo videos. Listings with media get 3x more views.</p>
               </div>
               
               <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
@@ -332,12 +332,21 @@ export function SellEquipment() {
                 
                 {(formData.existingImages.length > 0 || formData.files.length > 0) && (
                   <div className="mt-6">
-                    <h4 className="text-sm font-semibold text-slate-700 mb-3">Selected Photos ({formData.existingImages.length + formData.files.length}/10)</h4>
+                    <h4 className="text-sm font-semibold text-slate-700 mb-3">Selected Photos & Videos ({formData.existingImages.length + formData.files.length}/10)</h4>
                     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {/* Existing Images */}
+                      {/* Existing Images/Videos */}
                       {formData.existingImages.map((img) => (
                         <div key={`existing-${img.id}`} className="group relative aspect-square rounded-xl overflow-hidden border-2 border-slate-200 bg-white shadow-sm hover:border-emerald-500 transition-colors">
-                          <img src={`${API_BASE_URL}${img.image_url}`} alt="" className="w-full h-full object-cover" />
+                          {(img as any).media_type === 'video' ? (
+                            <div className="relative w-full h-full bg-slate-900">
+                              <video src={`${API_BASE_URL}${img.image_url}`} className="w-full h-full object-cover opacity-80" muted />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-[10px] font-bold text-white bg-slate-800/80 px-1 rounded">VIDEO</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <img src={`${API_BASE_URL}${img.image_url}`} alt="" className="w-full h-full object-cover" />
+                          )}
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <button
                               type="button"
@@ -352,7 +361,16 @@ export function SellEquipment() {
                       {/* New Files */}
                       {formData.files.map((file, i) => (
                         <div key={`new-${i}`} className="group relative aspect-square rounded-xl overflow-hidden border-2 border-slate-200 bg-white shadow-sm hover:border-emerald-500 transition-colors">
-                          <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+                          {file.type.startsWith('video/') ? (
+                            <div className="relative w-full h-full bg-slate-900">
+                              <video src={URL.createObjectURL(file)} className="w-full h-full object-cover opacity-80" muted />
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-[10px] font-bold text-white bg-slate-800/80 px-1 rounded">VIDEO</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
                             <span className="text-white text-xs truncate w-full">{file.name}</span>
                           </div>
@@ -364,7 +382,7 @@ export function SellEquipment() {
                 
                 {formData.existingImages.length === 0 && formData.files.length === 0 && (
                   <div className="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200 flex gap-3 text-amber-800 text-sm">
-                    ⚠️ <div><strong>No images selected.</strong> You can continue without images, but your listing will be saved as a Draft and won't be visible to buyers until you add photos.</div>
+                    ⚠️ <div><strong>No media selected.</strong> You can continue without media, but your listing will be saved as a Draft and won't be visible to buyers until you add photos or a video.</div>
                   </div>
                 )}
               </div>

@@ -57,7 +57,8 @@ export function useEquipment(filters?: EquipmentFilters) {
     queryKey: ['equipment', filters],
     queryFn: async () => {
       const res = await api.get('/equipment', { params: backendFilters });
-      return res.data.data as Equipment[];
+      const items = res.data?.data || res.data;
+      return (Array.isArray(items) ? items : []) as Equipment[];
     },
   });
 }
@@ -70,8 +71,8 @@ export function useSingleEquipment(id: string) {
       const res = await api.get(`/equipment/${id}`);
       // Backend returns { post: {...}, images: [...] }
       // Merge them for easy consumption
-      const { post, images } = res.data;
-      return { ...post, images } as Equipment;
+      const { post, images } = res.data || {};
+      return { ...(post || {}), images: images || [] } as Equipment;
     },
     enabled: !!id,
   });
@@ -83,7 +84,8 @@ export function useSimilarEquipment(id: string) {
     queryKey: ['equipment', 'similar', id],
     queryFn: async () => {
       const res = await api.get(`/equipment/${id}/similar`);
-      return res.data as Equipment[];
+      const items = res.data?.data || res.data;
+      return (Array.isArray(items) ? items : []) as Equipment[];
     },
     enabled: !!id,
   });
@@ -95,7 +97,8 @@ export function useMyListings() {
     queryKey: ['my-equipment'],
     queryFn: async () => {
       const res = await api.get('/equipment/my-posts');
-      return res.data.data as Equipment[];
+      const items = res.data?.data || res.data;
+      return (Array.isArray(items) ? items : []) as Equipment[];
     },
   });
 }
