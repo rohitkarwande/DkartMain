@@ -1,6 +1,6 @@
 import { Outlet, Link } from "react-router-dom";
 import { TopNavbar } from "./TopNavbar";
-import logoImg from "@/assets/logo.jpg";
+import logoDarkImg from "@/assets/logo_dark.png";
 
 export function MainLayout() {
   return (
@@ -16,7 +16,7 @@ export function MainLayout() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
-                <img src={logoImg} alt="Dr's Kart Logo" className="h-10 w-auto" />
+                <img src={logoDarkImg} alt="Dr's Kart Logo" className="h-10 w-auto" />
               </div>
               <p className="text-sm">India's trusted B2B healthcare equipment marketplace for hospitals, clinics, and diagnostic centers.</p>
             </div>

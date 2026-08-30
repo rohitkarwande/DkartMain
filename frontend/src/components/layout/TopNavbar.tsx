@@ -1,8 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Search, PlusCircle, LayoutDashboard, MessageSquare, Package, LogOut, ShieldCheck, Shield, User as UserIcon, LifeBuoy } from "lucide-react";
+import { Search, PlusCircle, LayoutDashboard, MessageSquare, Package, LogOut, ShieldCheck, Shield, Sun, Moon, User as UserIcon, LifeBuoy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth, useLogout } from "@/hooks/useAuth";
+import { useTheme } from "@/context/ThemeContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import logoImg from "@/assets/logo.jpg";
+import logoDarkImg from "@/assets/logo_dark.png";
 import { useState } from "react";
 import { UserLocation } from "./UserLocation";
 
@@ -23,6 +25,7 @@ interface TopNavbarProps {
 
 export function TopNavbar({ onSearch }: TopNavbarProps) {
   const { data: user, isLoading } = useAuth();
+  const { resolvedTheme, setTheme } = useTheme();
   const logout = useLogout();
   const navigate = useNavigate();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -44,6 +47,10 @@ export function TopNavbar({ onSearch }: TopNavbarProps) {
     ? user.first_name.charAt(0).toUpperCase() 
     : (user?.email ? user.email.charAt(0).toUpperCase() : 'U');
 
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
       <div className="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8">
@@ -52,7 +59,7 @@ export function TopNavbar({ onSearch }: TopNavbarProps) {
           <div className="flex items-center gap-1">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <img src={logoImg} alt="Dr's Kart Logo" className="h-16 md:h-16 w-auto object-contain" />
+              <img src={resolvedTheme === 'dark' ? logoDarkImg : logoImg} alt="Dr's Kart Logo" className="h-16 md:h-16 w-auto object-contain" />
             </Link>
 
             {/* User Location */}
@@ -83,8 +90,7 @@ export function TopNavbar({ onSearch }: TopNavbarProps) {
               <Search className="h-5 w-5" />
             </button>
 
-            {/* Quick Theme Toggle Button - Disabled for now */}
-            {/* 
+            {/* Quick Theme Toggle Button */}
             <Button
               variant="ghost"
               size="icon"
@@ -99,7 +105,6 @@ export function TopNavbar({ onSearch }: TopNavbarProps) {
                 <Moon className="h-4 w-4 text-slate-600 transition-transform rotate-0 hover:-rotate-12" />
               )}
             </Button>
-            */}
 
             {/* Sell Equipment CTA */}
             <Button 
@@ -152,7 +157,7 @@ export function TopNavbar({ onSearch }: TopNavbarProps) {
                   <DropdownMenuItem asChild className="cursor-pointer py-2 focus:bg-slate-100 dark:focus:bg-slate-800">
                     <Link to="/dashboard/profile">
                       <UserIcon className="mr-2 h-4 w-4 text-slate-400" />
-                      <span>Profile Settings</span>
+                      <span>Profile & Appearance</span>
                     </Link>
                   </DropdownMenuItem>
                   {user.role === 'admin' && (
