@@ -1,5 +1,6 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 import { TopNavbar } from "./TopNavbar";
+import logoImg from "@/assets/logo.jpg";
 
 export function MainLayout() {
   return (
@@ -15,12 +16,7 @@ export function MainLayout() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-4">
-                <div className="bg-emerald-600 p-1.5 rounded-lg">
-                  <span className="text-white font-bold text-lg leading-none block">DK</span>
-                </div>
-                <span className="font-bold text-xl tracking-tight text-white">
-                  D<span className="text-emerald-500">Kart</span>
-                </span>
+                <img src={logoImg} alt="Dr's Kart Logo" className="h-10 w-auto" />
               </div>
               <p className="text-sm">India's trusted B2B healthcare equipment marketplace for hospitals, clinics, and diagnostic centers.</p>
             </div>
@@ -42,18 +38,33 @@ export function MainLayout() {
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-semibold mb-4">Support</h4>
+              <h4 className="text-white font-semibold mb-4">Support & Company</h4>
               <ul className="space-y-2 text-sm">
+                <li><Link to="/about" className="hover:text-emerald-400 transition-colors">About Us</Link></li>
                 <li><a href="#" className="hover:text-emerald-400 transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-emerald-400 transition-colors">Contact Us</a></li>
+                <li><Link to="/contact" className="hover:text-emerald-400 transition-colors">Contact Us</Link></li>
                 <li><a href="#" className="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
                 <li><a href="#" className="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-slate-800 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
-            <span>&copy; {new Date().getFullYear()} DKart Marketplace. All rights reserved.</span>
-            <span className="text-slate-500">Made for India's Healthcare Ecosystem</span>
+            <span>&copy; {new Date().getFullYear()} Dr's Kart Marketplace. All rights reserved.</span>
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-slate-500">
+              <span>Made for India's Healthcare Ecosystem</span>
+              <span className="hidden sm:inline text-slate-800">|</span>
+              <span>
+                Designed & Developed By{" "}
+                <a
+                  href="https://www.azyntrex.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-500 hover:text-emerald-400 font-medium transition-colors"
+                >
+                  Azyntrex Tech Services Pvt Ltd
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </footer>

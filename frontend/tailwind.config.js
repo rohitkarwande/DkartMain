@@ -8,6 +8,19 @@ export default {
   theme: {
   	extend: {
   		colors: {
+        emerald: {
+          50: '#e6f0f7',
+          100: '#ccddec',
+          200: '#99bbd9',
+          300: '#6699c6',
+          400: '#3377b2',
+          500: '#095C99',
+          600: '#1BB5BA',
+          700: '#159c9f',
+          800: '#117b7f',
+          900: '#0d5d60',
+          950: '#063032',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

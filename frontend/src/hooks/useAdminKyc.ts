@@ -49,6 +49,26 @@ export interface AdminUser {
   company_name: string | null;
   kyc_status: string | null;
   document_type: string | null;
+  paid_promotions_enabled: boolean;
+}
+
+export interface FraudReport {
+  id: number;
+  reporter_id: number;
+  reported_user_id: number;
+  equipment_post_id: string;
+  reason: string;
+  description: string | null;
+  status: 'Pending' | 'Reviewed' | 'Resolved';
+  created_at: string;
+  reporter_email: string | null;
+  reporter_first_name: string | null;
+  reporter_last_name: string | null;
+  seller_email: string | null;
+  seller_company: string | null;
+  equipment_title: string | null;
+  equipment_category: string | null;
+  equipment_status: string | null;
 }
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
@@ -226,6 +246,56 @@ export function useRemoveIpFromBlacklist() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'security', 'ip-blacklist'] });
+    },
+  });
+}
+
+export function useTogglePaidPromotionsAccess() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userId, enabled }: { userId: number; enabled: boolean }) => {
+      const res = await api.patch(`/admin/users/${userId}/paid-promotions`, { enabled });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    },
+  });
+}
+
+export function useAdminReports() {
+  return useQuery({
+    queryKey: ['admin', 'reports'],
+    queryFn: async () => {
+      const res = await api.get('/admin/reports');
+      return res.data as FraudReport[];
+    },
+    staleTime: 1000 * 15,
+  });
+}
+
+export function useUpdateReportStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const res = await api.patch(`/admin/reports/${id}/status`, { status });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reports'] });
+    },
+  });
+}
+
+export function useDeleteEquipmentAdmin() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await api.delete(`/equipment/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reports'] });
     },
   });
 }

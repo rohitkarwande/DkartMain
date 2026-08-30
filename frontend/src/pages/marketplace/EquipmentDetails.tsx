@@ -3,7 +3,7 @@ import { useSingleEquipment, useSimilarEquipment } from "@/hooks/useEquipment";
 import { useCreateInquiry } from "@/hooks/useInquiries";
 import { 
   Loader2, MapPin, Tag, ShieldCheck, Mail, ArrowLeft, 
-  Calendar, CheckCircle2
+  Calendar, CheckCircle2, AlertTriangle
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 import { EquipmentCard } from "@/components/shared/EquipmentCard";
-import { API_BASE_URL } from "@/lib/api";
+import { api, API_BASE_URL } from "@/lib/api";
 
 export function EquipmentDetails() {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +25,59 @@ export function EquipmentDetails() {
   const [isSent, setIsSent] = useState(false);
   const [inquiryError, setInquiryError] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // Report Listing states
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState("Suspected Fraud");
+  const [reportDescription, setReportDescription] = useState("");
+  const [reportSuccess, setReportSuccess] = useState("");
+  const [reportError, setReportError] = useState("");
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+
+  // Admin delete listing states
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleAdminDelete = async () => {
+    if (!id || !equipment) return;
+    if (!confirm(`Are you sure you want to delete (archive) the listing "${equipment?.title || ""}" as an administrator?`)) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      await api.delete(`/equipment/${id}`);
+      alert("Listing has been successfully deleted/archived.");
+      navigate("/search");
+    } catch (err: any) {
+      alert(err.response?.data?.error || "Failed to delete listing.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleReportSubmit = async () => {
+    if (!id || !equipment?.seller_id) return;
+    setIsSubmittingReport(true);
+    setReportError("");
+    setReportSuccess("");
+    try {
+      await api.post("/reports/fraud", {
+        reported_user_id: equipment.seller_id,
+        equipment_post_id: id,
+        reason: reportReason,
+        description: reportDescription,
+      });
+      setReportSuccess("Report submitted successfully. Thank you for keeping our platform safe.");
+      setReportDescription("");
+      setTimeout(() => {
+        setShowReportModal(false);
+        setReportSuccess("");
+      }, 3000);
+    } catch (err: any) {
+      setReportError(err.response?.data?.error || "Failed to submit report.");
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
 
   // Auto scroll to top when equipment changes
   useEffect(() => {
@@ -186,6 +239,36 @@ export function EquipmentDetails() {
                 )}
               </div>
             )}
+
+            {user && (
+              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+                <button
+                  onClick={() => setShowReportModal(true)}
+                  className="inline-flex items-center gap-1.5 text-xs text-red-500 hover:text-red-650 hover:underline font-semibold font-medium transition-colors"
+                >
+                  <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
+                  Report this Listing
+                </button>
+              </div>
+            )}
+
+            {user?.role === 'admin' && (
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-850 space-y-2">
+                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider text-center">Admin Actions</p>
+                <Button
+                  variant="destructive"
+                  className="w-full h-10 bg-red-600 hover:bg-red-700 text-white font-bold"
+                  onClick={handleAdminDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? (
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Deleting...</>
+                  ) : (
+                    <>Delete Listing</>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -296,6 +379,91 @@ export function EquipmentDetails() {
             ))}
           </div>
         </section>
+      )}
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+            <div className="bg-red-600 px-6 py-4 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-white" />
+              <div className="font-extrabold text-white text-base">Report Listing</div>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Help us keep Dr's Kart secure. If you believe this listing contains inaccurate information, is fraudulent, or violates platform policies, please report it.
+              </p>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Reason for Report
+                </label>
+                <select
+                  value={reportReason}
+                  onChange={(e) => setReportReason(e.target.value)}
+                  className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-red-500"
+                >
+                  <option value="Suspected Fraud">Suspected Fraud</option>
+                  <option value="Inaccurate Specifications">Inaccurate Specifications</option>
+                  <option value="Incorrect Pricing">Incorrect Pricing</option>
+                  <option value="Listing Unavailable/Sold">Listing Unavailable/Sold</option>
+                  <option value="Counterfeit or Copy">Counterfeit or Copy</option>
+                  <option value="Other Policy Violation">Other Policy Violation</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                  Details / Explanation
+                </label>
+                <Textarea
+                  value={reportDescription}
+                  onChange={(e) => setReportDescription(e.target.value)}
+                  placeholder="Provide details about why you are reporting this listing..."
+                  className="text-sm bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 focus-visible:ring-red-500 text-left"
+                  rows={3}
+                />
+              </div>
+
+              {reportSuccess && (
+                <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/40 text-xs text-green-700 dark:text-green-400 rounded-lg flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600 dark:text-green-400" />
+                  {reportSuccess}
+                </div>
+              )}
+              {reportError && (
+                <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-xs text-red-700 dark:text-red-400 rounded-lg">
+                  {reportError}
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1" 
+                  onClick={() => { setShowReportModal(false); setReportSuccess(""); setReportError(""); }}
+                  disabled={isSubmittingReport}
+                >
+                  Cancel
+                </Button>
+                {!reportSuccess && (
+                  <Button
+                    className="flex-1 bg-red-650 hover:bg-red-700 text-white font-bold"
+                    onClick={handleReportSubmit}
+                    disabled={isSubmittingReport}
+                  >
+                    {isSubmittingReport ? (
+                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</>
+                    ) : (
+                      "Submit Report"
+                    )}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

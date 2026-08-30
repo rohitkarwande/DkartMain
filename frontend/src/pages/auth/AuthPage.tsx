@@ -214,7 +214,7 @@ export function AuthPage() {
         <div className="relative z-10 p-12 flex flex-col justify-between h-full max-w-2xl text-white">
           <div className="flex items-center gap-2 text-emerald-400">
             <Activity className="h-8 w-8" />
-            <span className="text-2xl font-bold tracking-tight">DKart</span>
+            <span className="text-2xl font-bold tracking-tight">Dr's Kart</span>
           </div>
           
           <div className="mb-24">
@@ -495,7 +495,7 @@ export function AuthPage() {
           ) : null}
 
           <div className="mt-8 text-center text-sm text-slate-500">
-            By continuing, you agree to DKart's <br/>
+            By continuing, you agree to Dr's Kart's <br/>
             <a href="#" className="underline hover:text-slate-900">Terms of Service</a> and <a href="#" className="underline hover:text-slate-900">Privacy Policy</a>
           </div>
         </div>
@@ -514,7 +514,7 @@ export function AuthPage() {
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
               </svg>
               <h3 className="text-xl font-bold text-slate-800">Sign in with Google</h3>
-              <p className="text-xs text-slate-500 mt-1">to continue to DKart Marketplace</p>
+              <p className="text-xs text-slate-500 mt-1">to continue to Dr's Kart Marketplace</p>
             </div>
 
             {/* List of profiles */}
@@ -534,14 +534,14 @@ export function AuthPage() {
               </button>
 
               <button
-                onClick={() => handleGoogleLogin({ email: "infodrskart@gmail.com", name: "DKart Info", isMock: true })}
+                onClick={() => handleGoogleLogin({ email: "infodrskart@gmail.com", name: "Dr's Kart Info", isMock: true })}
                 className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all text-left group"
               >
                 <div className="h-10 w-10 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0">
                   DK
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">DKart Info</div>
+                  <div className="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">Dr's Kart Info</div>
                   <div className="text-xs text-slate-500 truncate">infodrskart@gmail.com</div>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md shrink-0">Admin</span>

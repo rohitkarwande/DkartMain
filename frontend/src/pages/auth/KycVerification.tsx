@@ -93,7 +93,7 @@ export function KycVerification() {
         </div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Under Review</h1>
         <p className="text-slate-500 dark:text-slate-400 mb-6">
-          Your KYC application is currently being reviewed by the DKart team.
+          Your KYC application is currently being reviewed by the Dr's Kart team.
           You'll receive a notification once a decision is made.
         </p>
         <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-xl p-4 text-sm text-amber-800 dark:text-amber-300 text-left">
@@ -117,7 +117,7 @@ export function KycVerification() {
         </div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Seller Account Active</h1>
         <p className="text-slate-500 dark:text-slate-400 mb-6">
-          Your KYC has been approved. You can now list and sell equipment on DKart.
+          Your KYC has been approved. You can now list and sell equipment on Dr's Kart.
         </p>
         <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
           <Link to="/sell">
@@ -192,7 +192,7 @@ export function KycVerification() {
         <div className="mx-auto w-16 h-16 bg-emerald-100 dark:bg-emerald-950/60 rounded-full flex items-center justify-center mb-4">
           <ShieldCheck className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Become a Seller on DKart</h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Become a Seller on Dr's Kart</h1>
         <p className="text-slate-600 dark:text-slate-400 max-w-lg mx-auto">
           To list medical equipment, verify your business credentials.
           This builds trust with buyers across the platform.
@@ -311,7 +311,7 @@ export function KycVerification() {
             <FileText className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
             <div className="text-sm text-blue-700 dark:text-blue-300">
               <p className="font-semibold mb-1">What happens next?</p>
-              <p>Your submission will be reviewed by the DKart admin team. Once approved, your account will be instantly upgraded to Seller — no logout required.</p>
+              <p>Your submission will be reviewed by the Dr's Kart admin team. Once approved, your account will be instantly upgraded to Seller — no logout required.</p>
             </div>
           </div>
 

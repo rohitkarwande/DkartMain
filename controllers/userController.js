@@ -3,7 +3,7 @@ const db = require('../config/db');
 const getProfile = async (req, res) => {
     try {
         const result = await db.query(
-            `SELECT u.id, u.email, u.phone, u.is_verified, u.created_at, u.role,
+            `SELECT u.id, u.email, u.phone, u.is_verified, u.created_at, u.role, u.paid_promotions_enabled,
                     p.first_name, p.last_name, p.company_name, p.avatar_url, p.bio, p.age, p.profession, p.location
              FROM users u
              LEFT JOIN user_profiles p ON u.id = p.user_id

@@ -13,6 +13,8 @@ import {
   Sliders,
   Sparkles,
   LifeBuoy,
+  AlertOctagon,
+  Wrench,
 } from "lucide-react";
 import { useAdminStats } from "@/hooks/useAdminKyc";
 
@@ -22,6 +24,8 @@ const NAV_ITEMS = [
   { label: "Promotions", href: "/admin/promotions", icon: Sparkles, badge: "pendingPromotions" },
   { label: "KYC Applications", href: "/admin/kyc", icon: ShieldCheck, badge: "pendingKyc" },
   { label: "Support Tickets", href: "/admin/tickets", icon: LifeBuoy, badge: "openTickets" },
+  { label: "Fraud Reports", href: "/admin/reports", icon: AlertOctagon },
+  { label: "Service Bookings", href: "/admin/services", icon: Wrench },
   { label: "Deal Funnel", href: "/admin/deals", icon: TrendingUp },
   { label: "Manage Users", href: "/admin/users", icon: Users },
   { label: "Security & IPs", href: "/admin/security", icon: ShieldAlert },
@@ -53,7 +57,7 @@ export function AdminLayout() {
                 <ShieldCheck className="h-5 w-5 text-white" />
               </div>
               <div>
-                <p className="font-bold text-white text-sm">DKart Admin</p>
+                <p className="font-bold text-white text-sm">Dr's Kart Admin</p>
                 <p className="text-xs text-slate-500">Control Panel</p>
               </div>
             </Link>

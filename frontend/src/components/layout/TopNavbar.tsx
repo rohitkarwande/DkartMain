@@ -14,22 +14,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import logoImg from "@/assets/logo.jpg";
 import { useState } from "react";
-
 import { UserLocation } from "./UserLocation";
 
-export function TopNavbar() {
+interface TopNavbarProps {
+  onSearch?: (query: string) => void;
+}
+
+export function TopNavbar({ onSearch }: TopNavbarProps) {
   const { data: user, isLoading } = useAuth();
   const { resolvedTheme, setTheme } = useTheme();
   const logout = useLogout();
   const navigate = useNavigate();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget as HTMLFormElement);
-    const q = formData.get("q");
-    if (q) navigate(`/search?keyword=${encodeURIComponent(q as string)}`);
+    const formData = new FormData(e.currentTarget);
+    const query = formData.get("q") as string;
+    if (onSearch) {
+      onSearch(query);
+    } else if (query) {
+      navigate(`/search?keyword=${encodeURIComponent(query)}`);
+    }
     setMobileSearchOpen(false);
   };
 
@@ -50,12 +58,7 @@ export function TopNavbar() {
           <div className="flex items-center gap-1">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <div className="bg-emerald-600 p-1.5 rounded-lg shadow-sm">
-                <span className="text-white font-bold text-base md:text-lg leading-none block">DK</span>
-              </div>
-              <span className="font-bold text-lg md:text-xl tracking-tight hidden sm:block text-slate-900 dark:text-white">
-                D<span className="text-emerald-600 dark:text-emerald-400">Kart</span>
-              </span>
+              <img src={logoImg} alt="Dr's Kart Logo" className="h-16 md:h-16 w-auto object-contain" />
             </Link>
 
             {/* User Location */}
@@ -120,8 +123,8 @@ export function TopNavbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
-                    <Avatar className="h-9 w-9 border-2 border-emerald-100 dark:border-emerald-900">
-                      <AvatarFallback className="bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-sm">
+                    <Avatar className="h-9 w-9 border-2 border-emerald-500/20">
+                      <AvatarFallback className="bg-emerald-500 text-white font-bold text-sm">
                         {initials}
                       </AvatarFallback>
                     </Avatar>

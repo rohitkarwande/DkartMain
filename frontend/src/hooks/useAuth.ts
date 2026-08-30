@@ -14,6 +14,7 @@ export interface UserProfile {
   last_name?: string;
   company_name?: string;
   status?: string;
+  paid_promotions_enabled?: boolean;
 }
 
 export interface KycStatus {

@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { LayoutDashboard, Package, MessageCircle, ShoppingBag, Loader2, User, Activity, Shield, Sparkles, LifeBuoy } from "lucide-react";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { LayoutDashboard, Package, MessageCircle, ShoppingBag, Loader2, User, Activity, Shield, Sparkles, LifeBuoy, Wrench } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard, exact: true },
@@ -9,13 +10,19 @@ const NAV_ITEMS = [
   { label: "Promotions", href: "/dashboard/promotions", icon: Sparkles, sellerOnly: true },
   { label: "Inquiries", href: "/dashboard/inquiries", icon: Activity },
   { label: "Chat", href: "/dashboard/chat", icon: MessageCircle },
+  { label: "Book Service", href: "/dashboard/services", icon: Wrench },
   { label: "Support Tickets", href: "/dashboard/tickets", icon: LifeBuoy },
 ];
 
 export function DashboardLayout() {
-  const { data: user, isLoading } = useAuth();
+  const { data: user, isLoading: authLoading } = useAuth();
+  const { data: featureFlags, isLoading: flagsLoading } = useFeatureFlags();
   const location = useLocation();
+  const isLoading = authLoading || flagsLoading;
+  
   const isSeller = user?.role === 'seller' || user?.role === 'admin';
+  const isPaidPromotionsGloballyEnabled = featureFlags?.flags?.enable_paid_promotions ?? false;
+  const hasPaidPromotionAccess = user?.role === 'admin' || (user?.role === 'seller' && user?.paid_promotions_enabled);
 
   if (isLoading) {
     return (
@@ -25,7 +32,12 @@ export function DashboardLayout() {
     );
   }
 
-  const visibleItems = NAV_ITEMS.filter(item => !item.sellerOnly || isSeller);
+  const visibleItems = NAV_ITEMS.filter(item => {
+    if (item.href === "/dashboard/promotions") {
+      return isPaidPromotionsGloballyEnabled && hasPaidPromotionAccess;
+    }
+    return !item.sellerOnly || isSeller;
+  });
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8 pb-20 md:pb-8">

@@ -47,7 +47,7 @@ const getAllUsers = async (req, res) => {
     try {
         const { search, role, status } = req.query;
         let query = `
-            SELECT u.id, u.email, u.phone, u.is_verified, u.role, u.status, u.created_at,
+            SELECT u.id, u.email, u.phone, u.is_verified, u.role, u.status, u.created_at, u.paid_promotions_enabled,
                    p.first_name, p.last_name, p.company_name,
                    k.status AS kyc_status, k.document_type
             FROM users u
@@ -508,6 +508,67 @@ const getReportCsv = async (req, res) => {
     }
 };
 
+const togglePaidPromotionsAccess = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { enabled } = req.body;
+        if (typeof enabled !== 'boolean') {
+            return res.status(400).json({ error: 'enabled must be a boolean' });
+        }
+        const result = await db.query(
+            "UPDATE users SET paid_promotions_enabled = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING id, email, role, paid_promotions_enabled",
+            [enabled, id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+        res.json({ message: `Paid promotions access ${enabled ? 'granted' : 'revoked'} successfully`, user: result.rows[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error toggling paid promotions access' });
+    }
+};
+
+const getFraudReports = async (req, res) => {
+    try {
+        const query = `
+            SELECT r.id, r.reporter_id, r.reported_user_id, r.equipment_post_id, r.reason, r.description, r.status, r.created_at,
+                   u_rep.email as reporter_email, p_rep.first_name as reporter_first_name, p_rep.last_name as reporter_last_name,
+                   u_seller.email as seller_email, p_seller.company_name as seller_company,
+                   ep.title as equipment_title, ep.category as equipment_category, ep.status as equipment_status
+            FROM fraud_reports r
+            LEFT JOIN users u_rep ON r.reporter_id = u_rep.id
+            LEFT JOIN user_profiles p_rep ON r.reporter_id = p_rep.user_id
+            LEFT JOIN users u_seller ON r.reported_user_id = u_seller.id
+            LEFT JOIN user_profiles p_seller ON r.reported_user_id = p_seller.user_id
+            LEFT JOIN equipment_posts ep ON r.equipment_post_id = ep.id
+            ORDER BY r.created_at DESC
+        `;
+        const result = await db.query(query);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error fetching fraud reports' });
+    }
+};
+
+const updateReportStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        if (!['Pending', 'Reviewed', 'Resolved'].includes(status)) {
+            return res.status(400).json({ error: 'Invalid status' });
+        }
+        const result = await db.query(
+            "UPDATE fraud_reports SET status = $1 WHERE id = $2 RETURNING *",
+            [status, id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Report not found' });
+        res.json({ message: `Report status updated to ${status}`, report: result.rows[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error updating report status' });
+    }
+};
+
 module.exports = {
     getDashboardStats,
     getAllUsers,
@@ -526,6 +587,9 @@ module.exports = {
     approveKyc,
     rejectKyc,
     getReportCsv,
+    togglePaidPromotionsAccess,
+    getFraudReports,
+    updateReportStatus,
 };
 
 // ─────────────────────────────────────────────────────────────

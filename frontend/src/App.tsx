@@ -10,6 +10,7 @@ import { Profile } from "./pages/dashboard/Profile";
 import { Promotions } from "./pages/dashboard/Promotions";
 import { SupportTickets } from "./pages/dashboard/SupportTickets";
 import { Home } from "./pages/marketplace/Home";
+import { About } from "./pages/marketplace/About";
 import { Search } from "./pages/marketplace/Search";
 import { EquipmentDetails } from "./pages/marketplace/EquipmentDetails";
 import { AuthPage } from "./pages/auth/AuthPage";
@@ -26,6 +27,10 @@ import { AdminSecurity } from "./pages/admin/AdminSecurity";
 import { HeroBanners } from "./pages/admin/HeroBanners";
 import { AdminPromotions } from "./pages/admin/AdminPromotions";
 import { AdminTickets } from "./pages/admin/AdminTickets";
+import { AdminReports } from "./pages/admin/AdminReports";
+import { AdminServices } from "./pages/admin/AdminServices";
+import { ServiceBooking } from "./pages/dashboard/ServiceBooking";
+import { Contact } from "./pages/marketplace/Contact";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRoleSync } from "./hooks/useAuth";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -58,7 +63,7 @@ function RoleSyncMount() {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="dkart-theme">
+    <ThemeProvider defaultTheme="light" storageKey="drskart-theme">
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <RoleSyncMount />
@@ -75,6 +80,8 @@ function App() {
               <Route path="users" element={<AdminUsers />} />
               <Route path="security" element={<AdminSecurity />} />
               <Route path="tickets" element={<AdminTickets />} />
+              <Route path="reports" element={<AdminReports />} />
+              <Route path="services" element={<AdminServices />} />
             </Route>
           </Route>
 
@@ -82,8 +89,10 @@ function App() {
           <Route element={<MainLayout />}>
             {/* ── PUBLIC MARKETPLACE ROUTES ── */}
             <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
             <Route path="/search" element={<Search />} />
             <Route path="/equipment/:id" element={<EquipmentDetails />} />
+            <Route path="/contact" element={<Contact />} />
 
             {/* ── AUTH ROUTES ── */}
             <Route path="/login" element={<AuthPage />} />
@@ -99,6 +108,7 @@ function App() {
               <Route path="chat" element={<Chat />} />
               <Route path="promotions" element={<Promotions />} />
               <Route path="tickets" element={<SupportTickets />} />
+              <Route path="services" element={<ServiceBooking />} />
             </Route>
 
             {/* ── SELLER-ONLY ROUTE (gated by KYC/role) ── */}

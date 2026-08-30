@@ -22,6 +22,7 @@ router.get('/users', adminController.getAllUsers);
 router.patch('/users/:id/status', auditLog('UPDATE_USER_STATUS', 'user'), adminController.updateUserStatus);
 router.patch('/users/:id/suspend', auditLog('SUSPEND_USER', 'user'), adminController.suspendUser);
 router.patch('/users/:id/reactivate', auditLog('REACTIVATE_USER', 'user'), adminController.reactivateUser);
+router.patch('/users/:id/paid-promotions', auditLog('TOGGLE_PAID_PROMOTIONS_ACCESS', 'user'), adminController.togglePaidPromotionsAccess);
 
 // 3. Listing Moderation
 router.get('/listings', adminController.getAllListings);
@@ -62,6 +63,10 @@ router.post('/banners/reorder', auditLog('REORDER_BANNERS', 'hero_banner'), bann
 // 10. Feature Flags Management
 router.get('/feature-flags', featureFlagController.getFeatureFlags);
 router.patch('/feature-flags/:key', auditLog('UPDATE_FEATURE_FLAG', 'feature_flag'), featureFlagController.updateFeatureFlag);
+
+// 11. Fraud Reports Management
+router.get('/reports', adminController.getFraudReports);
+router.patch('/reports/:id/status', auditLog('UPDATE_REPORT_STATUS', 'fraud_report'), adminController.updateReportStatus);
 
 module.exports = router;
 

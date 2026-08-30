@@ -160,7 +160,7 @@ export function HeroCarousel() {
       <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 md:pt-16 md:pb-20 flex flex-col justify-between min-h-[560px] md:min-h-[620px]">
         
         {/* Top & Hero Text Section */}
-        <div className="max-w-2xl bg-slate-950/85 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-slate-800/80 shadow-2xl">
+        <div className="max-w-2xl bg-emerald-950/85 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-emerald-500/30 shadow-2xl shadow-emerald-500/10">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 text-emerald-300 text-xs font-semibold tracking-wide mb-4 shadow-sm">
             <Sparkles className="h-3.5 w-3.5 text-emerald-400 animate-pulse" />
@@ -185,7 +185,7 @@ export function HeroCarousel() {
               <Button
                 asChild
                 size="lg"
-                className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-6 rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all text-sm group"
+                className="bg-emerald-500 hover:bg-emerald-600 text-white hover:text-slate-950 font-bold px-6 rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-600/40 transition-all text-sm group border-0"
               >
                 <Link to={currentSlide.link_url}>
                   {currentSlide.button_text || "Explore Equipment"}

@@ -7,6 +7,14 @@ const sendError = (res, message, status = 400) => res.status(status).json({ erro
 // GET /api/promotions/plans — list all active promotion plans
 const getPlans = async (req, res) => {
     try {
+        // Check global feature flag
+        const flagRes = await db.query("SELECT is_enabled FROM feature_flags WHERE key = 'enable_paid_promotions'");
+        const isGlobalEnabled = flagRes.rows.length > 0 ? flagRes.rows[0].is_enabled : false;
+        
+        if (!isGlobalEnabled) {
+            return res.status(403).json({ error: 'Paid promotions are currently disabled globally by the administrator.' });
+        }
+
         const result = await db.query(
             `SELECT id, name, type, price, duration_days, description
              FROM promotion_plans
@@ -27,6 +35,22 @@ const requestPromotion = async (req, res) => {
     try {
         const sellerId = req.user.id;
         const { equipment_post_id, plan_id } = req.body;
+
+        // Check global feature flag
+        const flagRes = await db.query("SELECT is_enabled FROM feature_flags WHERE key = 'enable_paid_promotions'");
+        const isGlobalEnabled = flagRes.rows.length > 0 ? flagRes.rows[0].is_enabled : false;
+        
+        if (!isGlobalEnabled) {
+            return res.status(403).json({ error: 'Paid promotions are currently disabled globally by the administrator.' });
+        }
+
+        // Check user paid promotion access
+        const userRes = await db.query("SELECT paid_promotions_enabled FROM users WHERE id = $1", [sellerId]);
+        const isUserEnabled = userRes.rows.length > 0 ? userRes.rows[0].paid_promotions_enabled : false;
+
+        if (!isUserEnabled) {
+            return res.status(403).json({ error: 'You do not have permission to use paid promotions. Please request access from the administrator.' });
+        }
 
         if (!equipment_post_id || !plan_id) {
             return sendError(res, 'equipment_post_id and plan_id are required');
@@ -83,6 +107,23 @@ const requestPromotion = async (req, res) => {
 const getMyPromotions = async (req, res) => {
     try {
         const sellerId = req.user.id;
+
+        // Check global feature flag
+        const flagRes = await db.query("SELECT is_enabled FROM feature_flags WHERE key = 'enable_paid_promotions'");
+        const isGlobalEnabled = flagRes.rows.length > 0 ? flagRes.rows[0].is_enabled : false;
+        
+        if (!isGlobalEnabled) {
+            return res.status(403).json({ error: 'Paid promotions are currently disabled globally by the administrator.' });
+        }
+
+        // Check user paid promotion access
+        const userRes = await db.query("SELECT paid_promotions_enabled FROM users WHERE id = $1", [sellerId]);
+        const isUserEnabled = userRes.rows.length > 0 ? userRes.rows[0].paid_promotions_enabled : false;
+
+        if (!isUserEnabled) {
+            return res.status(403).json({ error: 'You do not have permission to use paid promotions.' });
+        }
+
         const result = await db.query(
             `SELECT p.*, pp.name as plan_name, pp.price as plan_price, pp.duration_days,
                     ep.title as equipment_title, ep.category as equipment_category

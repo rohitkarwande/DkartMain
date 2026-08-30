@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /search
+Allow: /equipment/
+Disallow: /login
+Disallow: /signup
+Disallow: /kyc
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /sell
+Disallow: /edit/
+
+Sitemap: https://dkart.com/sitemap.xml

@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useAdminUsers, useSuspendUser, useReactivateUser, type AdminUser } from "@/hooks/useAdminKyc";
+import { useAdminUsers, useSuspendUser, useReactivateUser, useTogglePaidPromotionsAccess, type AdminUser } from "@/hooks/useAdminKyc";
 import {
   Search,
   Loader2,
@@ -96,6 +96,7 @@ export function AdminUsers() {
 
   const suspendMutation = useSuspendUser();
   const reactivateMutation = useReactivateUser();
+  const togglePromoAccess = useTogglePaidPromotionsAccess();
 
   const handleAction = useCallback(() => {
     if (!confirmAction) return;
@@ -176,6 +177,7 @@ export function AdminUsers() {
                   <th className="text-left p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Role</th>
                   <th className="text-left p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">KYC</th>
                   <th className="text-left p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Account</th>
+                  <th className="text-left p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Paid Promo</th>
                   <th className="text-left p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Joined</th>
                   <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
@@ -219,6 +221,23 @@ export function AdminUsers() {
                     </td>
                     <td className="p-4">
                       <StatusBadge status={user.status} />
+                    </td>
+                    <td className="p-4">
+                      {user.role === 'seller' ? (
+                        <button
+                          onClick={() => togglePromoAccess.mutate({ userId: user.id, enabled: !user.paid_promotions_enabled })}
+                          disabled={togglePromoAccess.isPending}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md border text-xs font-bold transition-all ${
+                            user.paid_promotions_enabled
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+                              : 'bg-slate-900 text-slate-500 border-slate-700 hover:text-slate-400 hover:border-slate-600'
+                          }`}
+                        >
+                          {user.paid_promotions_enabled ? 'Allowed' : 'Denied'}
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-600">—</span>
+                      )}
                     </td>
                     <td className="p-4">
                       <span className="text-xs text-slate-500">

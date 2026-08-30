@@ -10,6 +10,8 @@ import {
 import { useState } from "react";
 import { api, API_BASE_URL } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 const statusColors: Record<string, string> = {
   Active: "bg-green-50 text-green-700 border-green-200",
@@ -23,6 +25,11 @@ export function Listings() {
   const deleteEquipment = useDeleteEquipment();
   const updateStatus = useUpdateEquipmentStatus();
   const queryClient = useQueryClient();
+  const { data: user } = useAuth();
+  const { data: featureFlags } = useFeatureFlags();
+
+  const isPaidPromotionsGloballyEnabled = featureFlags?.flags?.enable_paid_promotions ?? false;
+  const hasPaidPromotionAccess = user?.role === 'admin' || (user?.role === 'seller' && user?.paid_promotions_enabled);
   
   const [confirmDelete, setConfirmDelete] = useState<string | number | null>(null);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
@@ -223,7 +230,7 @@ export function Listings() {
                             <Edit className="h-3.5 w-3.5 mr-1" /> Edit
                           </Link>
                         </Button>
-                        {item.status === 'Active' && (
+                        {item.status === 'Active' && isPaidPromotionsGloballyEnabled && hasPaidPromotionAccess && (
                           <Button asChild size="sm" className="bg-amber-500 hover:bg-amber-600 text-white font-bold gap-1">
                             <Link to="/dashboard/promotions">
                               <Sparkles className="h-3.5 w-3.5" /> Promote

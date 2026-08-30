@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useFeatureFlags, useUpdateFeatureFlag } from "@/hooks/useFeatureFlags";
 import {
   Loader2, CheckCircle2, XCircle, Clock, TrendingUp,
   Megaphone, CalendarDays, RefreshCw, Filter,
@@ -81,6 +82,14 @@ export function AdminPromotions() {
 
   const { data: promotions, isLoading, refetch } = useAdminPromotions(filterStatus || undefined);
   const updateStatus = useUpdatePromotionStatus();
+  
+  const { data: featureFlags } = useFeatureFlags();
+  const updateFlag = useUpdateFeatureFlag();
+  const isPaidPromotionsEnabled = featureFlags?.flags?.enable_paid_promotions ?? false;
+
+  const handleToggleGlobalFlag = () => {
+    updateFlag.mutate({ key: "enable_paid_promotions", is_enabled: !isPaidPromotionsEnabled });
+  };
 
   const handleAction = async (id: number, status: "Active" | "Rejected") => {
     try {
@@ -118,6 +127,43 @@ export function AdminPromotions() {
         >
           <RefreshCw className="h-4 w-4" /> Refresh
         </button>
+      </div>
+
+      {/* Global Feature Flag Toggle */}
+      <div className="p-5 rounded-2xl border border-slate-800 bg-slate-900/60 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all">
+        <div className="flex items-center gap-3.5">
+          <div className={`p-3 rounded-xl ${isPaidPromotionsEnabled ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+            <Megaphone className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="font-bold text-white text-base flex items-center gap-2">
+              Paid Promotions Feature
+              <Badge className={`font-semibold text-xs px-2 py-0.5 ${isPaidPromotionsEnabled ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'}`}>
+                {isPaidPromotionsEnabled ? 'Globally Enabled' : 'Globally Disabled'}
+              </Badge>
+            </div>
+            <p className="text-slate-400 text-xs mt-1">
+              Toggle this to enable or disable all paid promotions across the platform for all users.
+            </p>
+          </div>
+        </div>
+        <Button
+          onClick={handleToggleGlobalFlag}
+          disabled={updateFlag.isPending}
+          className={`font-bold transition-all px-5 py-2.5 rounded-xl text-sm ${
+            isPaidPromotionsEnabled
+              ? "bg-red-650 hover:bg-red-700 text-white shadow-lg shadow-red-600/20"
+              : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-600/20"
+          }`}
+        >
+          {updateFlag.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : isPaidPromotionsEnabled ? (
+            "Disable Promotions"
+          ) : (
+            "Enable Promotions"
+          )}
+        </Button>
       </div>
 
       {/* Filter tabs */}

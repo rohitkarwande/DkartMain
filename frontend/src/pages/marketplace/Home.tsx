@@ -140,7 +140,7 @@ export function Home() {
           <div className="p-16 text-center border rounded-xl bg-white dark:bg-slate-900 border-dashed border-slate-200 dark:border-slate-800">
             <Package className="h-12 w-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">No listings yet</h3>
-            <p className="text-slate-400 dark:text-slate-500 mb-6">Be the first to list medical equipment on DKart.</p>
+            <p className="text-slate-400 dark:text-slate-500 mb-6">Be the first to list medical equipment on Dr's Kart.</p>
             <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
               <Link to="/sell">List Equipment</Link>
             </Button>
@@ -173,7 +173,7 @@ export function Home() {
         <div className="bg-emerald-600 rounded-2xl p-8 md:p-12 text-white text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to sell your medical equipment?</h2>
           <p className="text-emerald-100 mb-8 max-w-xl mx-auto">
-            Join thousands of hospitals, clinics, and dealers who trust DKart to reach the right buyers across India.
+            Join thousands of hospitals, clinics, and dealers who trust Dr's Kart to reach the right buyers across India.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {!user && (
