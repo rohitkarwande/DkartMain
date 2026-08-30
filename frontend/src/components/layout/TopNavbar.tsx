@@ -123,8 +123,8 @@ export function TopNavbar({ onSearch }: TopNavbarProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
-                    <Avatar className="h-9 w-9 border-2 border-emerald-500/20">
-                      <AvatarFallback className="bg-emerald-500 text-white font-bold text-sm">
+                    <Avatar className="h-9 w-9 border-2 border-emerald-600/20">
+                      <AvatarFallback className="bg-emerald-600 text-white font-bold text-sm">
                         {initials}
                       </AvatarFallback>
                     </Avatar>
