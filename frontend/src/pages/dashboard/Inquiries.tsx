@@ -173,7 +173,7 @@ export function Inquiries() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Inquiries</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Inquiries</h1>
         <p className="text-muted-foreground mt-2">
           Manage your incoming leads and outgoing equipment requests.
         </p>
@@ -188,7 +188,7 @@ export function Inquiries() {
           {isLoadingSeller ? (
             <div className="flex h-40 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
           ) : (
-            <div className="bg-white rounded-xl shadow-sm border p-1">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-1">
               <DataTable columns={sellerColumns} data={sellerInquiries || []} />
             </div>
           )}
@@ -197,7 +197,7 @@ export function Inquiries() {
           {isLoadingBuyer ? (
             <div className="flex h-40 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
           ) : (
-             <div className="bg-white rounded-xl shadow-sm border p-1">
+             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-1">
               <DataTable columns={buyerColumns} data={buyerInquiries || []} />
             </div>
           )}

@@ -82,7 +82,7 @@ export function ServiceBooking() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Booking Form (Left / Col-Span-2) */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <ClipboardList className="h-5 w-5 text-slate-400 dark:text-emerald-400" />
               Service Details
@@ -196,7 +196,7 @@ export function ServiceBooking() {
 
         {/* Requests History (Right Sidebar / Col-Span-1) */}
         <div className="space-y-6">
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <History className="h-5 w-5 text-slate-400 dark:text-emerald-400" />
               Request History
@@ -215,7 +215,7 @@ export function ServiceBooking() {
                 {requests.map((request) => (
                   <div
                     key={request.id}
-                    className="p-4 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50 space-y-2 hover:border-slate-200 dark:hover:border-slate-750 transition-all"
+                    className="p-4 rounded-xl border border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-800/50 space-y-2 hover:border-slate-200 dark:hover:border-slate-750 transition-all"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">

@@ -37,8 +37,12 @@ api.interceptors.response.use(
       // Token expired or unauthorized
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // Redirect to login if not already there
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+      // Redirect to login if not already on auth or secret portal pages
+      if (
+        window.location.pathname !== '/login' &&
+        window.location.pathname !== '/signup' &&
+        !window.location.pathname.includes('secret-admin-portal')
+      ) {
         window.location.href = '/login';
       }
     }

@@ -85,8 +85,8 @@ export function Listings() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">My Equipment Listings</h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">My Equipment Listings</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
             Manage your inventory · {listings?.length ?? 0} total listing{listings?.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -106,16 +106,16 @@ export function Listings() {
 
       {showBulkUpload && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl relative">
-            <button onClick={() => setShowBulkUpload(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-md p-6 shadow-xl relative border border-slate-200 dark:border-slate-700">
+            <button onClick={() => setShowBulkUpload(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
               <X className="h-5 w-5" />
             </button>
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Bulk Upload Listings</h2>
-            <p className="text-sm text-slate-500 mb-4">Upload a CSV file to add multiple equipment listings at once.</p>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Bulk Upload Listings</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Upload a CSV file to add multiple equipment listings at once.</p>
             
-            <div className="mb-6 p-4 bg-slate-50 rounded-lg text-sm border border-slate-100">
-              <h3 className="font-semibold text-slate-700 mb-2">Instructions:</h3>
-              <ul className="list-disc pl-5 space-y-1 text-slate-600">
+            <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg text-sm border border-slate-100 dark:border-slate-700">
+              <h3 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">Instructions:</h3>
+              <ul className="list-disc pl-5 space-y-1 text-slate-600 dark:text-slate-400">
                 <li>Required columns: Title, Category, Brand, Model, Condition, City</li>
                 <li>Valid Categories: MRI, X-Ray, Cathlab, ECG, Ultrasound, etc.</li>
                 <li>Valid Conditions: Used, Refurbished, Spare</li>
@@ -160,10 +160,10 @@ export function Listings() {
       )}
 
       {!listings?.length ? (
-        <div className="bg-white border border-dashed rounded-xl p-16 text-center">
-          <PlusCircle className="h-12 w-12 text-slate-200 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">No listings yet</h3>
-          <p className="text-slate-400 mb-6 text-sm">Create your first equipment listing to start receiving inquiries.</p>
+        <div className="bg-white dark:bg-slate-800 border border-dashed dark:border-slate-700 rounded-xl p-16 text-center">
+          <PlusCircle className="h-12 w-12 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">No listings yet</h3>
+          <p className="text-slate-400 dark:text-slate-500 mb-6 text-sm">Create your first equipment listing to start receiving inquiries.</p>
           <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
             <Link to="/sell">Create First Listing</Link>
           </Button>
@@ -179,10 +179,10 @@ export function Listings() {
               : "Price on Request";
 
             return (
-              <div key={item.id} className="bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+              <div key={item.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                 <div className="flex flex-col sm:flex-row">
                   {/* Image */}
-                  <div className="w-full sm:w-36 h-32 sm:h-auto bg-slate-100 shrink-0">
+                  <div className="w-full sm:w-36 h-32 sm:h-auto bg-slate-100 dark:bg-slate-800 shrink-0">
                     {imageUrl ? (
                       <img 
                         src={imageUrl} 
@@ -204,9 +204,9 @@ export function Listings() {
                         </Badge>
                         <span className="text-xs text-slate-400">{item.category}</span>
                       </div>
-                      <h3 className="font-bold text-slate-900 mb-1 line-clamp-1">{item.title}</h3>
-                      <p className="text-sm text-slate-500 mb-2">{item.brand} · {item.model}</p>
-                      <div className="flex items-center gap-4 text-xs text-slate-400">
+                      <h3 className="font-bold text-slate-900 dark:text-white mb-1 line-clamp-1">{item.title}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">{item.brand} · {item.model}</p>
+                      <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500">
                         <span className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" /> {item.city || "Location not set"}
                         </span>
@@ -218,7 +218,7 @@ export function Listings() {
 
                     {/* Price + Actions */}
                     <div className="flex flex-row sm:flex-col items-start sm:items-end justify-between sm:justify-between gap-3 shrink-0">
-                      <div className="text-lg font-bold text-slate-900">{formattedPrice}</div>
+                      <div className="text-lg font-bold text-slate-900 dark:text-white">{formattedPrice}</div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <Button asChild size="sm" variant="outline">
                           <Link to={`/equipment/${item.id}`}>

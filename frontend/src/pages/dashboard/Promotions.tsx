@@ -138,7 +138,7 @@ export function Promotions() {
           <div className="p-2 bg-amber-100 rounded-xl">
             <Sparkles className="h-5 w-5 text-amber-600" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Promote Your Listings</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Promote Your Listings</h1>
         </div>
         <p className="text-slate-500 text-sm mt-1 ml-12">
           Boost visibility with sponsored search placement or a featured hero carousel slide on the homepage.
@@ -164,9 +164,9 @@ export function Promotions() {
                       {plan.type === 'sponsored' ? 'Sponsored Listing' : 'Hero Carousel'}
                     </span>
                   </div>
-                  <span className="text-lg font-extrabold text-slate-900">{formattedPrice(plan.price)}</span>
+                  <span className="text-lg font-extrabold text-slate-900 dark:text-white">{formattedPrice(plan.price)}</span>
                 </div>
-                <div className="text-base font-bold text-slate-900 mt-1">{plan.name}</div>
+                <div className="text-base font-bold text-slate-900 dark:text-white mt-1">{plan.name}</div>
               </CardHeader>
               <CardContent className="pt-0">
                 <p className="text-sm text-slate-600 leading-relaxed">{plan.description}</p>
@@ -181,7 +181,7 @@ export function Promotions() {
 
       {/* My Listings — Promote Action */}
       <div>
-        <h2 className="text-lg font-bold text-slate-900 mb-3">Your Active Listings</h2>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Your Active Listings</h2>
         {listingsLoading ? (
           <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-emerald-600" /></div>
         ) : !listings?.filter((l: Equipment) => l.status === 'Active').length ? (
@@ -197,8 +197,8 @@ export function Promotions() {
                   ? `${API_BASE_URL}${(listing.images[0] as any).image_url || listing.images[0]}`
                   : null;
                 return (
-                  <div key={listing.id} className="flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+                  <div key={listing.id} className="flex items-center gap-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-sm">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
                       {imageUrl ? (
                         <img src={imageUrl} alt={listing.title} className="w-full h-full object-cover" />
                       ) : (
@@ -206,7 +206,7 @@ export function Promotions() {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-900 line-clamp-1">{listing.title}</div>
+                      <div className="font-bold text-slate-900 dark:text-white line-clamp-1">{listing.title}</div>
                       <div className="text-xs text-slate-500 mt-0.5">{listing.category} · {listing.brand}</div>
                     </div>
                     <Button
@@ -225,7 +225,7 @@ export function Promotions() {
 
       {/* My Promotions History */}
       <div>
-        <h2 className="text-lg font-bold text-slate-900 mb-3">My Promotions</h2>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3">My Promotions</h2>
         {promosLoading ? (
           <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-emerald-600" /></div>
         ) : !myPromotions?.length ? (
@@ -235,7 +235,7 @@ export function Promotions() {
         ) : (
           <div className="grid gap-3">
             {myPromotions.map((promo) => (
-              <div key={promo.id} className="flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+              <div key={promo.id} className="flex items-center gap-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 shadow-sm">
                 <div className={`p-2 rounded-full ${promo.type === 'sponsored' ? 'bg-amber-100' : 'bg-emerald-100'}`}>
                   {promo.type === 'sponsored'
                     ? <TrendingUp className="h-4 w-4 text-amber-600" />
@@ -243,7 +243,7 @@ export function Promotions() {
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-slate-900 text-sm line-clamp-1">{promo.equipment_title}</div>
+                  <div className="font-bold text-slate-900 dark:text-white text-sm line-clamp-1">{promo.equipment_title}</div>
                   <div className="text-xs text-slate-500">{promo.plan_name} · {formattedPrice(promo.plan_price)}</div>
                   {promo.status === 'Active' && promo.expires_at && (
                     <div className="text-xs text-emerald-600 font-medium mt-0.5">
@@ -263,7 +263,7 @@ export function Promotions() {
       {/* ─── Promote Modal ─────────────────────────────────────────────────── */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
             {/* Modal Header */}
             <div className="bg-gradient-to-r from-amber-500 to-orange-400 px-6 py-5">
               <div className="flex items-center gap-3">
@@ -278,7 +278,7 @@ export function Promotions() {
             <div className="p-6 space-y-5">
               {/* Plan selection */}
               <div>
-                <h3 className="font-bold text-slate-900 mb-3">Choose a Promotion Plan</h3>
+                <h3 className="font-bold text-slate-900 dark:text-white mb-3">Choose a Promotion Plan</h3>
                 <div className="space-y-3">
                   {plans?.map((plan) => {
                     const isSelected = selectedPlan?.id === plan.id;
@@ -288,13 +288,13 @@ export function Promotions() {
                         onClick={() => setSelectedPlan(plan)}
                         className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
                           isSelected
-                            ? 'border-amber-500 bg-amber-50 shadow-sm'
-                            : 'border-slate-200 hover:border-amber-300 hover:bg-amber-50/30'
+                            ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 shadow-sm'
+                            : 'border-slate-200 dark:border-slate-700 hover:border-amber-300 hover:bg-amber-50/30 dark:hover:bg-amber-900/10'
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-bold text-slate-900 text-sm">{plan.name}</div>
+                            <div className="font-bold text-slate-900 dark:text-white text-sm">{plan.name}</div>
                             <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                               {plan.type === 'sponsored' ? (
                                 <><TrendingUp className="h-3 w-3 text-amber-500" /> Sponsored search placement</>
@@ -306,7 +306,7 @@ export function Promotions() {
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <div className="font-extrabold text-slate-900">{formattedPrice(plan.price)}</div>
+                            <div className="font-extrabold text-slate-900 dark:text-white">{formattedPrice(plan.price)}</div>
                             {isSelected && <ChevronRight className="h-4 w-4 text-amber-500 ml-auto mt-0.5" />}
                           </div>
                         </div>

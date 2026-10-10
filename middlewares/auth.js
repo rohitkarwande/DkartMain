@@ -22,7 +22,8 @@ const authMiddleware = async (req, res, next) => {
 
         req.user = {
             ...decoded,
-            ...userRes.rows[0]
+            ...userRes.rows[0],
+            admin2Fa: decoded.admin2Fa === true
         };
         next();
     } catch (error) {

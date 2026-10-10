@@ -162,9 +162,9 @@ export function TopNavbar({ onSearch }: TopNavbarProps) {
                   </DropdownMenuItem>
                   {user.role === 'admin' && (
                     <DropdownMenuItem asChild className="cursor-pointer py-2 text-violet-600 dark:text-violet-400 focus:text-violet-700 dark:focus:text-violet-300 focus:bg-violet-50 dark:focus:bg-violet-950/50">
-                      <Link to="/admin">
+                      <Link to="/secret-admin-portal">
                         <Shield className="mr-2 h-4 w-4" />
-                        <span>Admin Panel</span>
+                        <span>Admin Portal (2FA)</span>
                       </Link>
                     </DropdownMenuItem>
                   )}

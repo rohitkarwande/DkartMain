@@ -98,7 +98,7 @@ const sendMessage = async (req, res) => {
                 const { buyer_id, seller_id, equipment_title, sender_name } = roomInfo.rows[0];
                 const recipientId = req.user.id === buyer_id ? seller_id : buyer_id;
                 const { emailNewMessage } = require('../services/emailService');
-                emailNewMessage(recipientId, sender_name || 'A DKart user', message, equipment_title);
+                emailNewMessage(recipientId, sender_name || "A Dr's Kart user", message, equipment_title);
             }
         } catch (emailErr) {
             console.error('Failed to send message notification email:', emailErr);

@@ -142,14 +142,14 @@ export function SupportTickets() {
 
       {/* Tickets List */}
       <div className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-900">Your Tickets</h2>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">Your Tickets</h2>
 
         {isLoading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           </div>
         ) : !tickets?.length ? (
-          <div className="bg-white border border-slate-200 border-dashed rounded-2xl p-12 text-center text-slate-400">
+          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 border-dashed rounded-2xl p-12 text-center text-slate-400">
             <HelpCircle className="h-10 w-10 text-slate-300 mx-auto mb-3" />
             <p className="font-semibold text-sm">No support tickets found.</p>
             <p className="text-xs text-slate-400 mt-1">If you have any queries, click the button above to get help.</p>
@@ -161,7 +161,7 @@ export function SupportTickets() {
               return (
                 <div
                   key={ticket.id}
-                  className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm transition-all hover:shadow-md"
+                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm transition-all hover:shadow-md"
                 >
                   <div
                     onClick={() => toggleExpand(ticket.id)}
@@ -180,7 +180,7 @@ export function SupportTickets() {
                           {new Date(ticket.created_at).toLocaleDateString("en-IN")}
                         </span>
                       </div>
-                      <h3 className="font-bold text-slate-900 text-base line-clamp-1">{ticket.subject}</h3>
+                      <h3 className="font-bold text-slate-900 dark:text-white text-base line-clamp-1">{ticket.subject}</h3>
                       <p className="text-xs text-slate-500 font-medium mt-0.5">Category: {ticket.category}</p>
                     </div>
 
@@ -190,8 +190,8 @@ export function SupportTickets() {
                   </div>
 
                   {isExpanded && (
-                    <div className="px-4 pb-4 sm:px-5 sm:pb-5 border-t border-slate-100 bg-slate-50/50 pt-4 text-sm text-slate-700 leading-relaxed">
-                      <div className="font-bold text-slate-800 mb-1">Ticket Details:</div>
+                    <div className="px-4 pb-4 sm:px-5 sm:pb-5 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-700/40 pt-4 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                      <div className="font-bold text-slate-800 dark:text-slate-200 mb-1">Ticket Details:</div>
                       <p className="whitespace-pre-wrap">{ticket.description}</p>
 
                       {ticket.updated_at && ticket.updated_at !== ticket.created_at && (
@@ -211,7 +211,7 @@ export function SupportTickets() {
       {/* ─── Raise Ticket Modal ────────────────────────────────────────────── */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-700">
             {/* Header */}
             <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-5 flex items-center gap-3">
               <LifeBuoy className="h-6 w-6 text-white" />
@@ -225,12 +225,12 @@ export function SupportTickets() {
               {/* Category */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="category" className="text-slate-700 font-bold text-xs">Category</Label>
+                  <Label htmlFor="category" className="text-slate-700 dark:text-slate-300 font-bold text-xs">Category</Label>
                   <select
                     id="category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
                     <option value="Technical">Technical Issue</option>
                     <option value="Billing">Billing / Payment</option>
@@ -241,12 +241,12 @@ export function SupportTickets() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="priority" className="text-slate-700 font-bold text-xs">Priority</Label>
+                  <Label htmlFor="priority" className="text-slate-700 dark:text-slate-300 font-bold text-xs">Priority</Label>
                   <select
                     id="priority"
                     value={priority}
                     onChange={(e) => setPriority(e.target.value)}
-                    className="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -257,20 +257,20 @@ export function SupportTickets() {
 
               {/* Subject */}
               <div className="space-y-1.5">
-                <Label htmlFor="subject" className="text-slate-700 font-bold text-xs">Subject / Brief Description</Label>
+                <Label htmlFor="subject" className="text-slate-700 dark:text-slate-300 font-bold text-xs">Subject / Brief Description</Label>
                 <Input
                   id="subject"
                   placeholder="e.g. Cannot edit equipment price"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   required
-                  className="h-11 bg-slate-50/50 border-slate-200 focus-visible:ring-emerald-500 rounded-xl"
+                  className="h-11 bg-slate-50/50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus-visible:ring-emerald-500 rounded-xl"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-1.5">
-                <Label htmlFor="description" className="text-slate-700 font-bold text-xs">Detailed Description</Label>
+                <Label htmlFor="description" className="text-slate-700 dark:text-slate-300 font-bold text-xs">Detailed Description</Label>
                 <Textarea
                   id="description"
                   placeholder="Describe your issue or query in detail so our support team can assist you better..."
@@ -278,7 +278,7 @@ export function SupportTickets() {
                   onChange={(e) => setDescription(e.target.value)}
                   required
                   rows={4}
-                  className="bg-slate-50/50 border-slate-200 focus-visible:ring-emerald-500 rounded-xl resize-none"
+                  className="bg-slate-50/50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 focus-visible:ring-emerald-500 rounded-xl resize-none"
                 />
               </div>
 

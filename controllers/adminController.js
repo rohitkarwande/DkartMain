@@ -337,7 +337,7 @@ const approveKyc = async (req, res) => {
         // 3. Create a notification for the user
         await client.query(
             `INSERT INTO notifications (user_id, type, message, reference_id)
-             VALUES ($1, 'KYC_APPROVED', 'Congratulations! Your Seller account has been approved. You can now list equipment on DKart.', $2)`,
+             VALUES ($1, 'KYC_APPROVED', 'Congratulations! Your Seller account has been approved. You can now list equipment on Dr''s Kart.', $2)`,
             [userId, kycResult.rows[0].id]
         );
 
@@ -347,7 +347,7 @@ const approveKyc = async (req, res) => {
         if (req.io) {
             req.io.to(`user_${userId}`).emit('role_updated', {
                 role: 'seller',
-                message: '🎉 Congratulations! Your Seller account has been approved. You can now list equipment on DKart.',
+                message: '🎉 Congratulations! Your Seller account has been approved. You can now list equipment on Dr\'s Kart.',
             });
         }
 

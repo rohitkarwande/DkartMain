@@ -14,6 +14,7 @@ const sellerRoutes = require('./routes/sellerRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const engagementRoutes = require('./routes/engagementRoutes');
 const dealRoutes = require('./routes/dealRoutes');
+const adminAuthRoutes = require('./routes/adminAuthRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const vendorRoutes = require('./routes/vendorRoutes');
@@ -65,6 +66,7 @@ Disallow: /signup
 Disallow: /kyc
 Disallow: /dashboard/
 Disallow: /admin/
+Disallow: /secret-admin-portal
 Disallow: /sell
 Disallow: /edit/
 
@@ -183,6 +185,7 @@ app.use('/api/sellers', sellerRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/engagement', engagementRoutes);
 app.use('/api/deals', dealRoutes);
+app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/vendor', vendorRoutes);

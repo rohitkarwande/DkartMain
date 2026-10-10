@@ -45,9 +45,9 @@ export function DashboardLayout() {
         
         {/* Left sidebar navigation — desktop only */}
         <aside className="w-64 flex-shrink-0 hidden md:block">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl shadow-slate-200/40 dark:shadow-none overflow-hidden sticky top-20 transition-colors">
+          <div className="bg-card border border-border rounded-2xl shadow-xl shadow-slate-200/40 dark:shadow-none overflow-hidden sticky top-20 transition-colors">
             {/* User info */}
-            <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-850 dark:to-slate-900">
+            <div className="p-6 border-b border-border bg-muted/30">
               <div className="h-12 w-12 rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-700 dark:text-emerald-300 font-bold text-lg mb-3">
                 {(user?.first_name?.[0] || user?.email?.[0] || 'U').toUpperCase()}
               </div>
@@ -114,7 +114,7 @@ export function DashboardLayout() {
       </div>
 
       {/* ── Mobile Bottom Navigation Bar ─────────────────────────────────── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-lg">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border shadow-lg">
         <div className="flex items-center justify-around px-2 py-1">
           {visibleItems.map((item) => {
             const isActive = item.exact 

@@ -18,6 +18,7 @@ import { KycVerification } from "./pages/auth/KycVerification";
 import { SellerProtectedRoute } from "./components/auth/SellerProtectedRoute";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminProtectedRoute } from "./components/auth/AdminProtectedRoute";
+import { AdminSecretPortal } from "./pages/admin/AdminSecretPortal";
 import { AdminLayout } from "./pages/admin/AdminLayout";
 import { AdminOverview } from "./pages/admin/AdminOverview";
 import { KycApplications } from "./pages/admin/KycApplications";
@@ -69,6 +70,9 @@ function App() {
           <RoleSyncMount />
           <ToastListener />
           <Routes>
+          {/* ── SECRET ADMIN 2FA GATEWAY PORTAL (Special Link) ── */}
+          <Route path="/secret-admin-portal" element={<AdminSecretPortal />} />
+
           {/* ── ADMIN ROUTES (separate from main layout) ── */}
           <Route element={<AdminProtectedRoute />}>
             <Route path="/admin" element={<AdminLayout />}>

@@ -22,7 +22,7 @@ const sendOTP = async (to, otp) => {
 
     try {
         const message = await client.messages.create({
-            body: `Your Dkart Auth verification code is: ${otp}`,
+            body: `Your Dr's Kart verification code is: ${otp}`,
             from: process.env.TWILIO_PHONE_NUMBER,
             to: to
         });

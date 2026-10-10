@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "npm run dev --prefix frontend",
     "server": "nodemon server.js",
+    "start": "node server.js",
+    "build": "npm run build --prefix frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

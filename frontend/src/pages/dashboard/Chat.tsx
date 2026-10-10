@@ -104,11 +104,11 @@ export function Chat() {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex border rounded-xl overflow-hidden bg-white shadow-sm">
+    <div className="h-[calc(100vh-8rem)] flex border dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-800 shadow-sm">
       {/* Rooms Sidebar - full width on mobile when no room selected, 1/3 on desktop */}
-      <div className={`${activeRoomId ? 'hidden md:flex' : 'flex'} md:flex w-full md:w-1/3 border-r bg-slate-50 flex-col`}>
-        <div className="p-4 border-b bg-white">
-          <h2 className="font-semibold text-lg text-slate-900">Messages</h2>
+      <div className={`${activeRoomId ? 'hidden md:flex' : 'flex'} md:flex w-full md:w-1/3 border-r dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex-col`}>
+        <div className="p-4 border-b dark:border-slate-700 bg-white dark:bg-slate-800">
+          <h2 className="font-semibold text-lg text-slate-900 dark:text-white">Messages</h2>
         </div>
         <ScrollArea className="flex-1">
           {isLoadingRooms ? (
@@ -125,8 +125,8 @@ export function Chat() {
                   <button
                     key={room.id}
                     onClick={() => setActiveRoomId(room.id)}
-                    className={`flex items-start gap-3 p-4 text-left transition-colors border-b last:border-0 ${
-                      activeRoomId === room.id ? "bg-emerald-50 border-l-4 border-l-emerald-600" : "hover:bg-slate-100 border-l-4 border-l-transparent"
+                    className={`flex items-start gap-3 p-4 text-left transition-colors border-b dark:border-slate-700 last:border-0 ${
+                      activeRoomId === room.id ? "bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-l-emerald-600" : "hover:bg-slate-100 dark:hover:bg-slate-700 border-l-4 border-l-transparent"
                     }`}
                   >
                     <Avatar className="h-10 w-10 border">
@@ -136,7 +136,7 @@ export function Chat() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-baseline mb-1">
-                        <span className="font-medium text-sm text-slate-900 truncate">
+                        <span className="font-medium text-sm text-slate-900 dark:text-white truncate">
                           Inquiry #{room.inquiry_id}
                         </span>
                         <span className="text-xs text-slate-400">
@@ -159,7 +159,7 @@ export function Chat() {
       <div className={`${activeRoomId ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-[#efeae2]`}>
         {activeRoomId ? (
           <>
-            <div className="p-3 md:p-4 border-b flex items-center justify-between bg-white shadow-sm z-10">
+            <div className="p-3 md:p-4 border-b dark:border-slate-700 flex items-center justify-between bg-white dark:bg-slate-800 shadow-sm z-10">
               <div className="flex items-center gap-3">
                 {/* Mobile back button */}
                 <button className="md:hidden text-slate-500 hover:text-slate-800 mr-1" onClick={() => setActiveRoomId(null)}>
@@ -171,7 +171,7 @@ export function Chat() {
                    </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold text-slate-900">Chat Room #{activeRoomId}</h3>
+                  <h3 className="font-semibold text-slate-900 dark:text-white">Chat Room #{activeRoomId}</h3>
                   <p className="text-xs text-emerald-600 font-medium">Online</p>
                 </div>
               </div>
@@ -201,7 +201,7 @@ export function Chat() {
             <ScrollArea className="flex-1 p-4 bg-[url('https://web.whatsapp.com/img/bg-chat-tile-light_04fcacde539c58cca6745483d4858c52.png')] bg-repeat bg-opacity-50" style={{ backgroundSize: "400px" }}>
               {isLoadingMessages ? (
                 <div className="flex h-full items-center justify-center">
-                  <div className="bg-white/80 p-3 rounded-full shadow-sm">
+                  <div className="bg-white/80 dark:bg-slate-700/80 p-3 rounded-full shadow-sm">
                     <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
                   </div>
                 </div>
@@ -214,9 +214,9 @@ export function Chat() {
                       <div key={msg.id} className={`flex flex-col max-w-[75%] ${isSelf ? "ml-auto items-end" : "mr-auto items-start"}`}>
                         <div 
                           className={`px-3 pt-2 pb-1.5 rounded-2xl relative shadow-sm ${
-                            isSelf 
-                              ? "bg-[#dcf8c6] text-slate-900 rounded-tr-none" 
-                              : "bg-white text-slate-900 rounded-tl-none"
+                              isSelf 
+                               ? "bg-[#dcf8c6] dark:bg-emerald-800 text-slate-900 dark:text-white rounded-tr-none" 
+                               : "bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-tl-none"
                           }`}
                         >
                           <p className="text-[15px] leading-snug">{msg.message}</p>
@@ -241,8 +241,8 @@ export function Chat() {
               )}
             </ScrollArea>
 
-            <div className="p-3 bg-[#f0f2f5] border-t flex gap-3 items-end">
-              <div className="flex-1 bg-white rounded-2xl flex items-center px-4 py-2 border border-slate-200">
+            <div className="p-3 bg-[#f0f2f5] dark:bg-slate-800 border-t dark:border-slate-700 flex gap-3 items-end">
+              <div className="flex-1 bg-white dark:bg-slate-700 rounded-2xl flex items-center px-4 py-2 border border-slate-200 dark:border-slate-600">
                 <form onSubmit={handleSend} className="w-full flex">
                   <Input
                     value={newMessage}
@@ -265,7 +265,7 @@ export function Chat() {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-slate-500 bg-[#f0f2f5]">
-            <div className="bg-white p-6 rounded-full mb-6 shadow-sm">
+            <div className="bg-white dark:bg-slate-800 p-6 rounded-full mb-6 shadow-sm">
               <MessageSquare className="h-16 w-16 text-emerald-200" />
             </div>
             <h2 className="text-xl font-light text-slate-700 mb-2">WhatsApp Web style interface</h2>
