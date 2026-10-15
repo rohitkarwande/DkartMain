@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { api } from "@/lib/api";
 
 interface EquipmentCardProps {
   id: string;
@@ -37,8 +38,14 @@ export function EquipmentCard({
     maximumFractionDigits: 0,
   }).format(price);
 
+  const handleClick = () => {
+    if (id) {
+      api.post(`/equipment/${id}/click`).catch(() => {});
+    }
+  };
+
   return (
-    <Link to={`/equipment/${id}`} className="block h-full group">
+    <Link to={`/equipment/${id}`} onClick={handleClick} className="block h-full group">
       <Card className={`overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col h-full border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 ${status === 'Sold' ? 'opacity-75' : ''} ${isSponsored ? 'ring-2 ring-amber-400/60 dark:ring-amber-500/50' : ''}`}>
         <div className="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-800">
           <img

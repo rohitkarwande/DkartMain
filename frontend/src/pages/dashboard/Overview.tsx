@@ -4,7 +4,7 @@ import { api } from "@/lib/api";
 import { Link } from "react-router-dom";
 import { 
   Package, MessageSquare, TrendingUp, PlusCircle, 
-  ShieldCheck, Loader2, ArrowRight, Star
+  ShieldCheck, Loader2, ArrowRight, Eye, MousePointerClick, Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -71,6 +71,7 @@ export function DashboardOverview() {
 
       {/* Stats Cards */}
       <div className="grid gap-6 grid-cols-2 lg:grid-cols-4">
+        {/* Listings */}
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 dark:bg-emerald-950/20 rounded-bl-full -mr-4 -mt-4 opacity-50 transition-transform group-hover:scale-110"></div>
           <div className="flex items-center gap-4 mb-4 relative z-10">
@@ -84,6 +85,44 @@ export function DashboardOverview() {
           </p>
         </div>
 
+        {/* Product Views */}
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-teal-50 dark:bg-teal-950/20 rounded-bl-full -mr-4 -mt-4 opacity-50 transition-transform group-hover:scale-110"></div>
+          <div className="flex items-center gap-4 mb-4 relative z-10">
+            <div className="p-3 bg-teal-100 dark:bg-teal-950/50 rounded-xl">
+              <Eye className="h-6 w-6 text-teal-700 dark:text-teal-400" />
+            </div>
+            <span className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Product Views</span>
+          </div>
+          <p className="text-4xl font-black text-slate-900 dark:text-white relative z-10">
+            {isStatsLoading ? <Loader2 className="h-8 w-8 animate-spin text-slate-400" /> : (stats?.stats?.totalViews ?? 0)}
+          </p>
+          <span className="text-xs text-slate-500 dark:text-slate-400 mt-2 block relative z-10">Total catalog impressions</span>
+        </div>
+
+        {/* Product Clicks */}
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 dark:bg-indigo-950/20 rounded-bl-full -mr-4 -mt-4 opacity-50 transition-transform group-hover:scale-110"></div>
+          <div className="flex items-center gap-4 mb-4 relative z-10">
+            <div className="p-3 bg-indigo-100 dark:bg-indigo-950/50 rounded-xl">
+              <MousePointerClick className="h-6 w-6 text-indigo-700 dark:text-indigo-400" />
+            </div>
+            <span className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Product Clicks</span>
+          </div>
+          <div className="flex items-baseline justify-between relative z-10">
+            <p className="text-4xl font-black text-slate-900 dark:text-white">
+              {isStatsLoading ? <Loader2 className="h-8 w-8 animate-spin text-slate-400" /> : (stats?.stats?.totalClicks ?? 0)}
+            </p>
+            {stats?.stats?.productCtr !== undefined && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+                {stats.stats.productCtr}% CTR
+              </span>
+            )}
+          </div>
+          <span className="text-xs text-slate-500 dark:text-slate-400 mt-2 block relative z-10">Direct customer visits</span>
+        </div>
+
+        {/* Inquiries */}
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 dark:bg-blue-950/20 rounded-bl-full -mr-4 -mt-4 opacity-50 transition-transform group-hover:scale-110"></div>
           <div className="flex items-center gap-4 mb-4 relative z-10">
@@ -95,30 +134,61 @@ export function DashboardOverview() {
           <p className="text-4xl font-black text-slate-900 dark:text-white relative z-10">
             {isStatsLoading ? <Loader2 className="h-8 w-8 animate-spin text-slate-400" /> : (stats?.stats?.totalInquiries ?? 0)}
           </p>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 dark:bg-orange-950/20 rounded-bl-full -mr-4 -mt-4 opacity-50 transition-transform group-hover:scale-110"></div>
-          <div className="flex items-center gap-4 mb-4 relative z-10">
-            <div className="p-3 bg-orange-100 dark:bg-orange-950/50 rounded-xl">
-              <TrendingUp className="h-6 w-6 text-orange-700 dark:text-orange-400" />
-            </div>
-            <span className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Role</span>
-          </div>
-          <p className="text-2xl font-bold text-slate-900 dark:text-white capitalize relative z-10 mt-2">{user?.role}</p>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-50 dark:bg-purple-950/20 rounded-bl-full -mr-4 -mt-4 opacity-50 transition-transform group-hover:scale-110"></div>
-          <div className="flex items-center gap-4 mb-4 relative z-10">
-            <div className="p-3 bg-purple-100 dark:bg-purple-950/50 rounded-xl">
-              <Star className="h-6 w-6 text-purple-700 dark:text-purple-400" />
-            </div>
-            <span className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</span>
-          </div>
-          <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 relative z-10 mt-2">Active</p>
+          <span className="text-xs text-slate-500 dark:text-slate-400 mt-2 block relative z-10">Buyer negotiations</span>
         </div>
       </div>
+
+      {/* Sponsored Banner Performance Strip for Sellers */}
+      {isSeller && (
+        <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 dark:from-amber-950/30 dark:to-orange-950/20 border border-amber-200 dark:border-amber-900/60 rounded-2xl p-6 relative overflow-hidden">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+            <div className="flex items-start sm:items-center gap-4">
+              <div className="p-3.5 bg-amber-500 text-white rounded-2xl shadow-lg shadow-amber-500/20 shrink-0">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Sponsored Hero Banner Performance</h3>
+                  <span className="bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    Homepage Live
+                  </span>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  Track real-time impressions and clicks generated from your promoted carousel banners.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-6 sm:gap-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm p-4 rounded-xl border border-amber-200/50 dark:border-amber-900/40">
+              <div>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Banner Views</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
+                  {isStatsLoading ? '...' : (stats?.stats?.bannerViews ?? 0)}
+                </p>
+              </div>
+              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700" />
+              <div>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Banner Clicks</p>
+                <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-0.5">
+                  {isStatsLoading ? '...' : (stats?.stats?.bannerClicks ?? 0)}
+                </p>
+              </div>
+              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700" />
+              <div>
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">CTR</p>
+                <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
+                  {isStatsLoading ? '...' : `${stats?.stats?.bannerCtr ?? 0}%`}
+                </p>
+              </div>
+              <Button asChild size="sm" variant="outline" className="border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 hover:bg-amber-100/50 rounded-lg text-xs font-semibold">
+                <Link to="/dashboard/promotions">
+                  View Details <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick Actions */}
       <h2 className="text-xl font-bold text-slate-900 dark:text-white pt-4">Quick Actions</h2>

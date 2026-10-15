@@ -29,6 +29,13 @@ export interface Equipment {
   seller_id: number;
   seller_email?: string;
   created_at: string;
+  views_count?: number;
+  clicks_count?: number;
+  inquiries_count?: number;
+  banner_views_count?: number;
+  banner_clicks_count?: number;
+  has_active_banner?: boolean;
+  is_sponsored?: boolean;
 }
 
 export interface EquipmentFilters {

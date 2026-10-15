@@ -1,5 +1,5 @@
-const { sendTransactionalEmail } = require('../config/email');
-const db = require('../config/db');
+const { sendTransactionalEmail } = require('../../config/email');
+const db = require('../../config/db');
 
 /**
  * Builds a branded HTML email wrapper around body content.

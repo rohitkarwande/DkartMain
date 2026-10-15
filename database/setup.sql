@@ -181,6 +181,7 @@ CREATE TABLE IF NOT EXISTS popular_tags (
 CREATE TABLE IF NOT EXISTS engagement_metrics (
     equipment_post_id UUID PRIMARY KEY REFERENCES equipment_posts(id) ON DELETE CASCADE,
     view_count INTEGER DEFAULT 0,
+    click_count INTEGER DEFAULT 0,
     save_count INTEGER DEFAULT 0,
     inquiry_count INTEGER DEFAULT 0,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

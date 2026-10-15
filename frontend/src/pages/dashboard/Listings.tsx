@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { 
   Loader2, PlusCircle, Trash2, CheckCircle2, 
-  MapPin, Calendar, Eye, Upload, Download, X, Edit, Sparkles
+  MapPin, Calendar, Eye, Upload, Download, X, Edit, Sparkles, MousePointerClick, Megaphone
 } from "lucide-react";
 import { useState } from "react";
 import { api, API_BASE_URL } from "@/lib/api";
@@ -206,13 +206,41 @@ export function Listings() {
                       </div>
                       <h3 className="font-bold text-slate-900 dark:text-white mb-1 line-clamp-1">{item.title}</h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">{item.brand} · {item.model}</p>
-                      <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500">
+                      <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-slate-500 mb-2">
                         <span className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" /> {item.city || "Location not set"}
                         </span>
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" /> {new Date(item.created_at).toLocaleDateString('en-IN')}
                         </span>
+                      </div>
+
+                      {/* Performance Metrics: Views, Clicks & Banner Stats */}
+                      <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200/60 dark:border-teal-900/40">
+                          <Eye className="h-3 w-3" /> {item.views_count ?? 0} views
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900/40">
+                          <MousePointerClick className="h-3 w-3" /> {item.clicks_count ?? 0} clicks
+                        </span>
+                        {item.views_count && item.views_count > 0 ? (
+                          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                            ({(((item.clicks_count || 0) / item.views_count) * 100).toFixed(1)}% CTR)
+                          </span>
+                        ) : null}
+
+                        {item.is_sponsored && (
+                          <Badge variant="secondary" className="bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold border-amber-300 dark:border-amber-800">
+                            <Sparkles className="h-2.5 w-2.5 mr-0.5 text-amber-600" /> Sponsored Listing
+                          </Badge>
+                        )}
+
+                        {item.has_active_banner && (
+                          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+                            <Megaphone className="h-3 w-3 text-amber-600" />
+                            Hero Banner: {item.banner_views_count ?? 0} views · {item.banner_clicks_count ?? 0} clicks
+                          </span>
+                        )}
                       </div>
                     </div>
 

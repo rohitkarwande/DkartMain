@@ -1,5 +1,5 @@
-const db = require('../config/db');
-const { sendTransactionalEmail } = require('../config/email');
+const db = require('../../config/db');
+const { sendTransactionalEmail } = require('../../config/email');
 
 const sendNotification = async (userId, type, message, referenceId = null) => {
     try {

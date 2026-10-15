@@ -8,7 +8,8 @@
     "server": "nodemon server.js",
     "start": "node server.js",
     "build": "npm run build --prefix frontend",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "set-admin": "node scripts/set_admin.js"
   },
   "keywords": [],
   "author": "",

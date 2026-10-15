@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../../config/db');
 
 /**
  * Sends a notification to all admin users and emits a real-time socket event.
@@ -48,6 +48,7 @@ const notifyAdmins = async (io, type, message, referenceId = null) => {
             }
         }
     } catch (error) {
+        
         console.error('Error in notifyAdmins service:', error);
     }
 };

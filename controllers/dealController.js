@@ -1,52 +1,21 @@
-const db = require('../config/db');
+const dealService = require('../services/communication/dealService');
 
 const getDealHistory = async (req, res) => {
     try {
-        const userId = req.user.id;
-        
-        // Deals are inquiries with status = 'Deal Closed'
-        const result = await db.query(
-            `SELECT i.*, ep.title as equipment_title, ep.price
-             FROM inquiries i
-             JOIN equipment_posts ep ON i.equipment_post_id = ep.id
-             WHERE i.status = 'Deal Closed' 
-             AND (i.buyer_id = $1 OR i.seller_id = $1)
-             ORDER BY i.created_at DESC`,
-            [userId]
-        );
-        
-        res.json(result.rows);
+        const deals = await dealService.getDealHistory(req.user.id);
+        res.json(deals);
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching deal history:', error);
         res.status(500).json({ error: 'Server Error' });
     }
 };
 
 const getMetrics = async (req, res) => {
     try {
-        const userId = req.user.id;
-        
-        // Metrics for a seller: total inquiries received vs deals closed
-        const totalInquiries = await db.query(
-            `SELECT COUNT(*) FROM inquiries WHERE seller_id = $1`,
-            [userId]
-        );
-        const closedDeals = await db.query(
-            `SELECT COUNT(*) FROM inquiries WHERE seller_id = $1 AND status = 'Deal Closed'`,
-            [userId]
-        );
-        
-        const total = parseInt(totalInquiries.rows[0].count) || 0;
-        const closed = parseInt(closedDeals.rows[0].count) || 0;
-        const conversionRatio = total > 0 ? ((closed / total) * 100).toFixed(2) + '%' : '0%';
-
-        res.json({
-            total_inquiries: total,
-            closed_deals: closed,
-            conversion_ratio: conversionRatio
-        });
+        const metrics = await dealService.getMetrics(req.user.id);
+        res.json(metrics);
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching deal metrics:', error);
         res.status(500).json({ error: 'Server Error' });
     }
 };

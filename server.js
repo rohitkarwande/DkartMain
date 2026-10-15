@@ -9,7 +9,6 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const equipmentRoutes = require('./routes/equipmentRoutes');
 const inquiryRoutes = require('./routes/inquiryRoutes');
-const bookmarkRoutes = require('./routes/bookmarkRoutes');
 const sellerRoutes = require('./routes/sellerRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const engagementRoutes = require('./routes/engagementRoutes');
@@ -180,7 +179,6 @@ app.use('/api/user', userRoutes); // Note: Should probably be 'users' to match R
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/api/bookmarks', bookmarkRoutes);
 app.use('/api/sellers', sellerRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/engagement', engagementRoutes);

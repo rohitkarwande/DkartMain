@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useActiveHeroBanners, type HeroBanner } from "@/hooks/useHeroBanners";
-import { API_BASE_URL } from "@/lib/api";
+import { api, API_BASE_URL } from "@/lib/api";
 
 const FALLBACK_SLIDES: HeroBanner[] = [
   {
@@ -89,6 +89,26 @@ export function HeroCarousel() {
       setCurrentIndex(0);
     }
   }, [slides.length, currentIndex]);
+
+  // Track banner impressions/views
+  const viewedBannerIds = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    const current = slides[currentIndex];
+    if (current && current.id && current.id > 0 && !viewedBannerIds.current.has(current.id)) {
+      viewedBannerIds.current.add(current.id);
+      api.post(`/banners/${current.id}/view`).catch(() => {
+        // Non-blocking view tracking
+      });
+    }
+  }, [currentIndex, slides]);
+
+  const handleBannerClick = (bannerId?: number) => {
+    if (!bannerId || bannerId <= 0) return;
+    api.post(`/banners/${bannerId}/click`).catch(() => {
+      // Non-blocking click tracking
+    });
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -185,6 +205,7 @@ export function HeroCarousel() {
               <Button
                 asChild
                 size="lg"
+                onClick={() => handleBannerClick(currentSlide?.id)}
                 className="bg-emerald-500 hover:bg-emerald-600 text-white hover:text-slate-950 font-bold px-6 rounded-xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-600/40 transition-all text-sm group border-0"
               >
                 <Link to={currentSlide.link_url}>

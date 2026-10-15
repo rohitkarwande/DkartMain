@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const auditService = require('../services/admin/auditService');
 
 const auditLog = (action, entityType) => {
     return async (req, res, next) => {
@@ -6,16 +6,19 @@ const auditLog = (action, entityType) => {
         res.json = function (body) {
             res.json = originalJson;
             
-            // Log if successful
+            // Log if successful status code
             if (res.statusCode >= 200 && res.statusCode < 300) {
                 const userId = req.user ? req.user.id : null;
-                const ip = req.ip || req.connection.remoteAddress;
-                let entityId = req.params.id || null;
+                const ip = req.ip || req.connection?.remoteAddress;
+                const entityId = req.params?.id || null;
                 
-                db.query(
-                    "INSERT INTO audit_logs (user_id, action, entity_type, entity_id, ip_address) VALUES ($1, $2, $3, $4, $5)",
-                    [userId, action, entityType, entityId, ip]
-                ).catch(err => console.error('Audit Log Error:', err));
+                auditService.logAction({
+                    userId,
+                    action,
+                    entityType,
+                    entityId,
+                    ipAddress: ip
+                });
             }
             
             return res.json(body);
@@ -25,3 +28,4 @@ const auditLog = (action, entityType) => {
 };
 
 module.exports = auditLog;
+

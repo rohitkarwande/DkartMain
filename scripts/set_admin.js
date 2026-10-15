@@ -1,6 +1,8 @@
 // Promote or configure an administrator account with 2FA contact info (Email + Mobile)
+const path = require('path');
 const { Pool } = require('pg');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 const targetEmail = process.argv[2] ? process.argv[2].trim().toLowerCase() : null;
@@ -12,8 +14,9 @@ if (targetPhone && !targetPhone.startsWith('+')) {
 
 (async () => {
     if (!targetEmail) {
-        console.error('❌ Usage: node set_admin.js <email> [mobile_phone]');
-        console.error('   Example: node set_admin.js admin@domain.com +919876543210\n');
+        console.error('❌ Usage: node scripts/set_admin.js <email> [mobile_phone]');
+        console.error('   Or:    npm run set-admin -- <email> [mobile_phone]');
+        console.error('   Example: node scripts/set_admin.js admin@domain.com +919876543210\n');
         process.exit(1);
     }
 

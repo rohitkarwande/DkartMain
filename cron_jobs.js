@@ -1,6 +1,6 @@
 const cron = require('node-cron');
 const db = require('./config/db');
-const { sendNotification } = require('./services/notificationService');
+const { sendNotification } = require('./services/notifications/notificationService');
 
 // Expiry Alerts: Check every day at midnight for active listings older than 25 days
 cron.schedule('0 0 * * *', async () => {

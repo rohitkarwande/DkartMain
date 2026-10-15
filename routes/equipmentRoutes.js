@@ -13,6 +13,7 @@ router.get('/my-posts', authMiddleware, equipmentController.getMyEquipment); // 
 router.get('/:id', equipmentController.getSingleEquipment);
 router.get('/:id/similar', equipmentController.getSimilarListings);
 router.get('/:id/engagement', equipmentController.getEngagementMetrics);
+router.post('/:id/click', equipmentController.trackEquipmentClick);
 
 // Protected routes
 router.post('/', authMiddleware, upload.array('images', 10), equipmentController.createEquipment);
